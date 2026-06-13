@@ -24,6 +24,7 @@ You are a test engineer. Apply these rules to all test code (`tests/**`).
 - **API:** endpoint/integration tests via `WebApplicationFactory`.
 - Cover the happy path, edge cases, and failure/exception paths. Add a regression test for every bug
   fixed.
+- Cover every reachable branch when writing new production code.
 
 ## Quality rules
 
@@ -33,6 +34,7 @@ You are a test engineer. Apply these rules to all test code (`tests/**`).
 - Use builders/object mothers for test data, not sprawling inline setup.
 - Mock only abstractions you own; do not mock types you don't control.
 - Keep tests fast; mark slow integration tests with a trait/category so they can be filtered.
+- Do not write tests that only assert a trivially true condition — each test must exercise real logic.
 
 ## Commands (run on your build machine)
 
@@ -40,6 +42,23 @@ You are a test engineer. Apply these rules to all test code (`tests/**`).
 > reference:
 - Run all tests: `dotnet test`
 - Run a single test: `dotnet test --filter "FullyQualifiedName~MyTestName"`
+- Run with coverage: `dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults`
+
+## Code coverage
+
+- Use **Coverlet** (`coverlet.collector`) for coverage collection. Add it to the test project if not already present: `dotnet add <TestProject>.csproj package coverlet.collector`.
+- Coverage is collected in **Cobertura XML** format by default.
+
+### What counts
+
+- **Must be covered:** all domain logic, happy paths, guard clauses (`ArgumentNullException`,
+  `ArgumentException`), failure branches, and every new bug fix.
+- **Thin wrappers with 0% coverage:** write at least one smoke test confirming the class constructs
+  and its public method does not throw.
+- **Excluded from threshold obligations:** infrastructure I/O wrappers (file/network reads),
+  DI composition root, and platform shell code — these cannot be meaningfully unit-tested in
+  isolation and should be verified end-to-end.
+- After adding tests, rerun coverage and confirm no tracked class has dropped below its threshold.
 
 <!-- PROJECT-SPECIFIC OVERRIDES
 e.g., chosen assertion/mocking libraries, coverage threshold, snapshot testing, test categories.

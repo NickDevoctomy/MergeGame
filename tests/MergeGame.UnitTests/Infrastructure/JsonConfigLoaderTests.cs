@@ -160,4 +160,118 @@ public sealed class JsonConfigLoaderTests
 
         act.Should().Throw<ConfigurationException>().WithMessage("*unknown*");
     }
+
+    [Fact]
+    public void GivenJsonWithZeroRows_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 10, "rows": 0 },
+              "tileSize": 64,
+              "items": [{ "name": "a", "description": "", "image": "a.png", "product": null }],
+              "spawners": [],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*rows*");
+    }
+
+    [Fact]
+    public void GivenJsonWithNoItems_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 10, "rows": 10 },
+              "tileSize": 64,
+              "items": [],
+              "spawners": [],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*items*");
+    }
+
+    [Fact]
+    public void GivenItemWithEmptyName_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 10, "rows": 10 },
+              "tileSize": 64,
+              "items": [{ "name": "", "description": "", "image": "a.png", "product": null }],
+              "spawners": [],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*non-empty name*");
+    }
+
+    [Fact]
+    public void GivenSpawnerColumnOutOfRange_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "column": 10, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*column*");
+    }
+
+    [Fact]
+    public void GivenSpawnerRowOutOfRange_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "column": 0, "row": 10, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*row*");
+    }
+
+    [Fact]
+    public void GivenSpawnerWithNoSpawnableItems_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "column": 0, "row": 0, "spawnableItems": [] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*no spawnableItems*");
+    }
 }
