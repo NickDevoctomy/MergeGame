@@ -66,7 +66,12 @@ internal static class CompositionRoot
                 }
             }
 
-            SpawnerDefinition definition = new SpawnerDefinition(weights);
+            SpawnerDefinition definition = new SpawnerDefinition(
+                weights,
+                spawnerConfig.Name,
+                spawnerConfig.Description,
+                spawnerConfig.Image,
+                spawnerConfig.ItemLimit);
             GridPosition position = new GridPosition(spawnerConfig.Column, spawnerConfig.Row);
             session.Grid.PlaceSpawner(position, definition);
         }

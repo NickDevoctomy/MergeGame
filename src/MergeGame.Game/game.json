@@ -59,8 +59,12 @@
   ],
   "spawners": [
     {
+      "name": "Numberwang",
+      "description": "Spawns random low level numbers",
+      "image": "Resources/numberwang.png",
       "column": 0,
       "row": 0,
+      "itemLimit": 50,
       "spawnableItems": [
         { "itemName": "Level 1", "weight": 60 },
         { "itemName": "Level 2", "weight": 30 },

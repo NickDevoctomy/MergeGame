@@ -61,7 +61,10 @@ public sealed class GetGameStateHandlerTests
         GridPosition spawnerPos = new GridPosition(0, 0);
         ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
         SpawnerDefinition spawnerDef = new SpawnerDefinition(
-            new Dictionary<ItemDefinition, int> { [def] = 1 });
+            new Dictionary<ItemDefinition, int> { [def] = 1 },
+            "Numberwang",
+            string.Empty,
+            "Resources/numberwang.png");
         grid.PlaceSpawner(spawnerPos, spawnerDef);
 
         IGameSession session = Substitute.For<IGameSession>();
@@ -74,8 +77,8 @@ public sealed class GetGameStateHandlerTests
         CellStateDto spawnerCell = result.Cells.Single(c => c.Position == spawnerPos);
         spawnerCell.IsSpawner.Should().BeTrue();
         spawnerCell.IsEmpty.Should().BeFalse();
-        spawnerCell.ItemName.Should().BeNull();
-        spawnerCell.ImagePath.Should().BeNull();
+        spawnerCell.ItemName.Should().Be("Numberwang");
+        spawnerCell.ImagePath.Should().Be("Resources/numberwang.png");
     }
 
     [Fact]

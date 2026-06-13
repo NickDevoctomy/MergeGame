@@ -77,6 +77,23 @@ public sealed class MergeGrid
     }
 
     /// <summary>
+    /// Removes the spawner at <paramref name="position"/>, replacing it with an empty cell.
+    /// Throws if the cell does not contain a spawner.
+    /// </summary>
+    public void RemoveSpawner(GridPosition position)
+    {
+        ValidatePosition(position);
+
+        if (_cells[position.Column, position.Row] is not CellContent.Spawner)
+        {
+            throw new InvalidOperationException(
+                $"Cell ({position.Column},{position.Row}) does not contain a spawner.");
+        }
+
+        _cells[position.Column, position.Row] = CellContent.Empty.Instance;
+    }
+
+    /// <summary>
     /// Attempts to merge the item at <paramref name="sourcePosition"/> into the item at
     /// <paramref name="targetPosition"/> using <paramref name="rule"/>.
     /// </summary>

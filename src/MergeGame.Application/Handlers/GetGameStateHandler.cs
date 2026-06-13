@@ -36,7 +36,7 @@ public sealed class GetGameStateHandler
                 {
                     CellContent.Empty => new CellStateDto(position, null, null, false, true),
                     CellContent.Item item => new CellStateDto(position, item.MergeItem.Definition.Name, item.MergeItem.Definition.ImagePath, false, false),
-                    CellContent.Spawner => new CellStateDto(position, null, null, true, false),
+                    CellContent.Spawner s => new CellStateDto(position, s.Definition.Name, s.Definition.ImagePath, true, false),
                     _ => new CellStateDto(position, null, null, false, true),
                 };
 

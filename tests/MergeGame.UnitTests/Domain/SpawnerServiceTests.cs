@@ -17,7 +17,10 @@ public sealed class SpawnerServiceTests
     {
         ItemDefinition def = MakeDef("wood");
         SpawnerDefinition spawnerDef = new SpawnerDefinition(
-            new Dictionary<ItemDefinition, int> { [def] = 100 });
+            new Dictionary<ItemDefinition, int> { [def] = 100 },
+            "Test",
+            string.Empty,
+            "s.png");
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(50);
 
@@ -36,7 +39,10 @@ public sealed class SpawnerServiceTests
             {
                 [defOne] = 60,
                 [defTwo] = 40,
-            });
+            },
+            "Test",
+            string.Empty,
+            "s.png");
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(0);
 
@@ -55,7 +61,10 @@ public sealed class SpawnerServiceTests
             {
                 [defOne] = 60,
                 [defTwo] = 40,
-            });
+            },
+            "Test",
+            string.Empty,
+            "s.png");
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(60);
 
@@ -76,7 +85,10 @@ public sealed class SpawnerServiceTests
                 [defOne] = 0,
                 [defTwo] = 50,
                 [defThree] = 50,
-            });
+            },
+            "Test",
+            string.Empty,
+            "s.png");
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(0);
 

@@ -58,7 +58,13 @@ public sealed class ActivateSpawnerHandler
         MergeItem item = new MergeItem(definition, targetPosition);
 
         _session.Grid.PlaceItem(item);
+        spawnerCell.Definition.RecordSpawn();
         _soundService.PlaySound("spawn");
+
+        if (spawnerCell.Definition.IsExhausted)
+        {
+            _session.Grid.RemoveSpawner(command.SpawnerPosition);
+        }
 
         return new ActivateSpawnerResult.Success(item);
     }

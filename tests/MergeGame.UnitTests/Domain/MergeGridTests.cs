@@ -122,7 +122,10 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition pos = new GridPosition(0, 0);
         SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 });
+            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 },
+            "Spawner",
+            string.Empty,
+            "s.png");
 
         sut.PlaceSpawner(pos, def);
 
@@ -135,7 +138,10 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(2, 2);
         GridPosition spawnerPos = new GridPosition(0, 0);
         SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 });
+            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 },
+            "Spawner",
+            string.Empty,
+            "s.png");
         sut.PlaceSpawner(spawnerPos, def);
 
         IReadOnlyList<GridPosition> empty = sut.FindEmptyCells();
@@ -197,6 +203,29 @@ public sealed class MergeGridTests
         result.Should().BeOfType<MoveResult.Failure>();
     }
 
+    [Fact]
+    public void GivenSpawnerCell_WhenRemoveSpawner_ThenCellBecomesEmpty()
+    {
+        MergeGrid sut = new MergeGrid(3, 3);
+        GridPosition pos = new GridPosition(1, 1);
+        sut.PlaceSpawner(pos, MakeSpawnerDef());
+
+        sut.RemoveSpawner(pos);
+
+        sut.GetCell(pos).Should().Be(CellContent.Empty.Instance);
+    }
+
+    [Fact]
+    public void GivenNonSpawnerCell_WhenRemoveSpawner_ThenThrowsInvalidOperationException()
+    {
+        MergeGrid sut = new MergeGrid(3, 3);
+        GridPosition pos = new GridPosition(0, 0);
+
+        Action act = () => sut.RemoveSpawner(pos);
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
     private static ItemDefinition MakeDef(string name, bool hasProduct = true)
     {
         ItemDefinition? product = hasProduct
@@ -204,5 +233,14 @@ public sealed class MergeGridTests
             : null;
 
         return new ItemDefinition(name, string.Empty, name + ".png", product);
+    }
+
+    private static SpawnerDefinition MakeSpawnerDef()
+    {
+        return new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 },
+            "Spawner",
+            string.Empty,
+            "s.png");
     }
 }

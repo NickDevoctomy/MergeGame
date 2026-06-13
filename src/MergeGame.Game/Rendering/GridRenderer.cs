@@ -111,7 +111,9 @@ internal sealed class GridRenderer
     {
         if (cell.IsSpawner)
         {
-            return _assetManager.SpawnerTile;
+            return string.IsNullOrEmpty(cell.ImagePath)
+                ? _assetManager.SpawnerTile
+                : _assetManager.GetTile(cell.ImagePath);
         }
 
         if (cell.IsEmpty)

@@ -97,6 +97,24 @@ public sealed class JsonConfigLoader : IConfigLoader
 
         foreach (SpawnerConfig spawner in config.Spawners)
         {
+            if (string.IsNullOrWhiteSpace(spawner.Name))
+            {
+                throw new ConfigurationException(
+                    $"Spawner at ({spawner.Column},{spawner.Row}) must have a non-empty name.");
+            }
+
+            if (string.IsNullOrWhiteSpace(spawner.Image))
+            {
+                throw new ConfigurationException(
+                    $"Spawner '{spawner.Name}' must have a non-empty image path.");
+            }
+
+            if (spawner.ItemLimit < 0)
+            {
+                throw new ConfigurationException(
+                    $"Spawner '{spawner.Name}' itemLimit must be zero or greater.");
+            }
+
             if (spawner.Column < 0 || spawner.Column >= config.Grid.Columns)
             {
                 throw new ConfigurationException(

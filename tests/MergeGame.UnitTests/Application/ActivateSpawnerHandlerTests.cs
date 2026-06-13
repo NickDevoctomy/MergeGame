@@ -91,10 +91,55 @@ public sealed class ActivateSpawnerHandlerTests
         grid.FindEmptyCells().Should().HaveCount(0);
     }
 
-    private static SpawnerDefinition CreateDefinition()
+    [Fact]
+    public void GivenSpawnerWithLimitOfOne_WhenHandle_ThenSpawnerCellBecomesEmpty()
+    {
+        MergeGrid grid = new MergeGrid(2, 1);
+        GridPosition spawnerPos = new GridPosition(0, 0);
+        grid.PlaceSpawner(spawnerPos, CreateDefinition(itemLimit: 1));
+
+        IRandomProvider random = Substitute.For<IRandomProvider>();
+        random.GetNext(Arg.Any<int>(), Arg.Any<int>()).Returns(0);
+
+        IGameSession session = Substitute.For<IGameSession>();
+        session.Grid.Returns(grid);
+
+        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random, Substitute.For<ISoundService>());
+
+        sut.Handle(new ActivateSpawnerCommand(spawnerPos));
+
+        grid.GetCell(spawnerPos).Should().Be(CellContent.Empty.Instance);
+    }
+
+    [Fact]
+    public void GivenSpawnerWithLimitNotYetReached_WhenHandle_ThenSpawnerCellRemainsASpawner()
+    {
+        MergeGrid grid = new MergeGrid(3, 1);
+        GridPosition spawnerPos = new GridPosition(0, 0);
+        grid.PlaceSpawner(spawnerPos, CreateDefinition(itemLimit: 5));
+
+        IRandomProvider random = Substitute.For<IRandomProvider>();
+        random.GetNext(Arg.Any<int>(), Arg.Any<int>()).Returns(0);
+
+        IGameSession session = Substitute.For<IGameSession>();
+        session.Grid.Returns(grid);
+
+        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random, Substitute.For<ISoundService>());
+
+        sut.Handle(new ActivateSpawnerCommand(spawnerPos));
+
+        grid.GetCell(spawnerPos).Should().BeOfType<CellContent.Spawner>();
+    }
+
+    private static SpawnerDefinition CreateDefinition(int itemLimit = 0)
     {
         ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
 
-        return new SpawnerDefinition(new Dictionary<ItemDefinition, int> { [def] = 100 });
+        return new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int> { [def] = 100 },
+            "Test Spawner",
+            string.Empty,
+            "s.png",
+            itemLimit);
     }
 }

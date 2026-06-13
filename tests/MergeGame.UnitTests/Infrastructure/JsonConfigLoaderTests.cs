@@ -27,8 +27,12 @@ public sealed class JsonConfigLoaderTests
           ],
           "spawners": [
             {
+              "name": "Numberwang",
+              "description": "Spawns random low level numbers",
+              "image": "res/spawner.png",
               "column": 0,
               "row": 0,
+              "itemLimit": 50,
               "spawnableItems": [
                 { "itemName": "Wood Chips", "weight": 100 }
               ]
@@ -130,7 +134,7 @@ public sealed class JsonConfigLoaderTests
               "tileSize": 64,
               "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
               "spawners": [
-                { "column": 0, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 0 }] }
+                { "name": "S", "image": "s.png", "column": 0, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 0 }] }
               ],
               "sounds": { "enabled": false, "soundFiles": {} }
             }
@@ -150,7 +154,7 @@ public sealed class JsonConfigLoaderTests
               "tileSize": 64,
               "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
               "spawners": [
-                { "column": 0, "row": 0, "spawnableItems": [{ "itemName": "unknown", "weight": 10 }] }
+                { "name": "S", "image": "s.png", "column": 0, "row": 0, "spawnableItems": [{ "itemName": "unknown", "weight": 10 }] }
               ],
               "sounds": { "enabled": false, "soundFiles": {} }
             }
@@ -224,7 +228,7 @@ public sealed class JsonConfigLoaderTests
               "tileSize": 64,
               "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
               "spawners": [
-                { "column": 10, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+                { "name": "S", "image": "s.png", "column": 10, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
               ],
               "sounds": { "enabled": false, "soundFiles": {} }
             }
@@ -244,7 +248,7 @@ public sealed class JsonConfigLoaderTests
               "tileSize": 64,
               "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
               "spawners": [
-                { "column": 0, "row": 10, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+                { "name": "S", "image": "s.png", "column": 0, "row": 10, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
               ],
               "sounds": { "enabled": false, "soundFiles": {} }
             }
@@ -264,7 +268,7 @@ public sealed class JsonConfigLoaderTests
               "tileSize": 64,
               "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
               "spawners": [
-                { "column": 0, "row": 0, "spawnableItems": [] }
+                { "name": "S", "image": "s.png", "column": 0, "row": 0, "spawnableItems": [] }
               ],
               "sounds": { "enabled": false, "soundFiles": {} }
             }
@@ -273,5 +277,65 @@ public sealed class JsonConfigLoaderTests
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
         act.Should().Throw<ConfigurationException>().WithMessage("*no spawnableItems*");
+    }
+
+    [Fact]
+    public void GivenSpawnerWithEmptyName_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "name": "", "image": "s.png", "column": 0, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*non-empty name*");
+    }
+
+    [Fact]
+    public void GivenSpawnerWithEmptyImage_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "name": "S", "image": "", "column": 0, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*image*");
+    }
+
+    [Fact]
+    public void GivenSpawnerWithNegativeItemLimit_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "name": "S", "image": "s.png", "column": 0, "row": 0, "itemLimit": -1, "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*itemLimit*");
     }
 }
