@@ -8,12 +8,15 @@ namespace MergeGame.Application.Handlers;
 public sealed class MergeItemsHandler
 {
     private readonly IGameSession _session;
+    private readonly ISoundService _soundService;
 
     /// <summary>Initializes a new instance of the <see cref="MergeItemsHandler"/> class.</summary>
-    public MergeItemsHandler(IGameSession session)
+    public MergeItemsHandler(IGameSession session, ISoundService soundService)
     {
         ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(soundService);
         _session = session;
+        _soundService = soundService;
     }
 
     /// <summary>Executes the command and returns the outcome.</summary>
@@ -23,11 +26,19 @@ public sealed class MergeItemsHandler
 
         MergeResult result = _session.Grid.TryMerge(command.Source, command.Target, _session.MergeRule);
 
-        return result switch
+        switch (result)
         {
-            MergeResult.Success s => new MergeItemsResult.Success(s.ProducedItem),
-            MergeResult.Failure f => new MergeItemsResult.Failed(f.Reason),
-            _ => new MergeItemsResult.Failed("Unexpected merge result."),
-        };
+            case MergeResult.Success s:
+                _soundService.PlaySound("merge");
+                return new MergeItemsResult.Success(s.ProducedItem);
+
+            case MergeResult.Failure f:
+                _soundService.PlaySound("invalid");
+                return new MergeItemsResult.Failed(f.Reason);
+
+            default:
+                _soundService.PlaySound("invalid");
+                return new MergeItemsResult.Failed("Unexpected merge result.");
+        }
     }
 }

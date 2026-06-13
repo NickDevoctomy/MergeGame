@@ -12,20 +12,24 @@ public sealed class ActivateSpawnerHandler
     private readonly IGameSession _session;
     private readonly SpawnerService _spawnerService;
     private readonly IRandomProvider _randomProvider;
+    private readonly ISoundService _soundService;
 
     /// <summary>Initializes a new instance of the <see cref="ActivateSpawnerHandler"/> class.</summary>
     public ActivateSpawnerHandler(
         IGameSession session,
         SpawnerService spawnerService,
-        IRandomProvider randomProvider)
+        IRandomProvider randomProvider,
+        ISoundService soundService)
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(spawnerService);
         ArgumentNullException.ThrowIfNull(randomProvider);
+        ArgumentNullException.ThrowIfNull(soundService);
 
         _session = session;
         _spawnerService = spawnerService;
         _randomProvider = randomProvider;
+        _soundService = soundService;
     }
 
     /// <summary>Executes the command and returns the outcome.</summary>
@@ -54,6 +58,7 @@ public sealed class ActivateSpawnerHandler
         MergeItem item = new MergeItem(definition, targetPosition);
 
         _session.Grid.PlaceItem(item);
+        _soundService.PlaySound("spawn");
 
         return new ActivateSpawnerResult.Success(item);
     }

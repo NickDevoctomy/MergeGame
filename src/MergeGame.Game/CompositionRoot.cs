@@ -30,6 +30,11 @@ internal static class CompositionRoot
         services.AddSingleton<IRandomProvider, SystemRandomProvider>();
         services.AddSingleton<SpawnerService>();
 
+        ISoundService soundService = config.Sounds.Enabled
+            ? new SoundService(config.Sounds)
+            : new NullSoundService();
+        services.AddSingleton(soundService);
+
         services.AddSingleton<IGameSession>(sp => new GameSession(
             sp.GetRequiredService<MergeGrid>(),
             sp.GetRequiredService<IMergeRule>()));

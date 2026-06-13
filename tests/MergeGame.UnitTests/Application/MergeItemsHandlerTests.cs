@@ -25,7 +25,7 @@ public sealed class MergeItemsHandlerTests
         grid.PlaceItem(new MergeItem(chips, sourcePos));
         grid.PlaceItem(new MergeItem(chips, targetPos));
 
-        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
+        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 
@@ -42,7 +42,7 @@ public sealed class MergeItemsHandlerTests
         grid.PlaceItem(new MergeItem(MakeDef("wood"), sourcePos));
         grid.PlaceItem(new MergeItem(MakeDef("stone"), targetPos));
 
-        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
+        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 
@@ -56,7 +56,7 @@ public sealed class MergeItemsHandlerTests
         GridPosition targetPos = new GridPosition(1, 0);
         grid.PlaceItem(new MergeItem(MakeDef("wood"), targetPos));
 
-        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
+        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(new GridPosition(0, 0), targetPos));
 
@@ -73,7 +73,7 @@ public sealed class MergeItemsHandlerTests
         grid.PlaceItem(new MergeItem(finalDef, sourcePos));
         grid.PlaceItem(new MergeItem(finalDef, targetPos));
 
-        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
+        MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 

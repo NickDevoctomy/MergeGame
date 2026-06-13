@@ -29,7 +29,7 @@ public sealed class ActivateSpawnerHandlerTests
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
 
-        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random);
+        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random, Substitute.For<ISoundService>());
 
         ActivateSpawnerResult result = sut.Handle(new ActivateSpawnerCommand(spawnerPos));
 
@@ -46,7 +46,7 @@ public sealed class ActivateSpawnerHandlerTests
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
 
-        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random);
+        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random, Substitute.For<ISoundService>());
 
         ActivateSpawnerResult result = sut.Handle(new ActivateSpawnerCommand(pos));
 
@@ -64,7 +64,7 @@ public sealed class ActivateSpawnerHandlerTests
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
 
-        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random);
+        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random, Substitute.For<ISoundService>());
 
         ActivateSpawnerResult result = sut.Handle(new ActivateSpawnerCommand(spawnerPos));
 
@@ -84,7 +84,7 @@ public sealed class ActivateSpawnerHandlerTests
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
 
-        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random);
+        ActivateSpawnerHandler sut = new ActivateSpawnerHandler(session, new SpawnerService(), random, Substitute.For<ISoundService>());
 
         sut.Handle(new ActivateSpawnerCommand(spawnerPos));
 
