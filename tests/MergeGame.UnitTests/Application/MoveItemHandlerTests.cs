@@ -17,6 +17,7 @@ public sealed class MoveItemHandlerTests
     [Fact]
     public void GivenItemAtSource_AndEmptyTarget_WhenHandle_ThenReturnsSuccess()
     {
+        // Arrange
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(2, 2);
@@ -24,14 +25,17 @@ public sealed class MoveItemHandlerTests
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
 
+        // Act
         MoveItemResult result = sut.Handle(new MoveItemCommand(sourcePos, targetPos));
 
+        // Assert
         result.Should().BeOfType<MoveItemResult.Success>();
     }
 
     [Fact]
     public void GivenItemAtSource_AndEmptyTarget_WhenHandle_ThenItemAppearsAtTarget()
     {
+        // Arrange
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(2, 2);
@@ -39,8 +43,11 @@ public sealed class MoveItemHandlerTests
         grid.PlaceItem(new MergeItem(def, sourcePos));
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
+
+        // Act
         sut.Handle(new MoveItemCommand(sourcePos, targetPos));
 
+        // Assert
         grid.GetCell(targetPos).Should().BeOfType<CellContent.Item>()
             .Which.MergeItem.Definition.Should().Be(def);
         grid.GetCell(sourcePos).Should().Be(CellContent.Empty.Instance);
@@ -49,18 +56,22 @@ public sealed class MoveItemHandlerTests
     [Fact]
     public void GivenEmptySource_WhenHandle_ThenReturnsFailed()
     {
+        // Arrange
         MergeGrid grid = new MergeGrid(5, 5);
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
 
+        // Act
         MoveItemResult result = sut.Handle(new MoveItemCommand(new GridPosition(0, 0), new GridPosition(1, 1)));
 
+        // Assert
         result.Should().BeOfType<MoveItemResult.Failed>();
     }
 
     [Fact]
     public void GivenItemAtSource_AndOccupiedTarget_WhenHandle_ThenReturnsFailed()
     {
+        // Arrange
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
@@ -69,8 +80,10 @@ public sealed class MoveItemHandlerTests
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
 
+        // Act
         MoveItemResult result = sut.Handle(new MoveItemCommand(sourcePos, targetPos));
 
+        // Assert
         result.Should().BeOfType<MoveItemResult.Failed>();
     }
 

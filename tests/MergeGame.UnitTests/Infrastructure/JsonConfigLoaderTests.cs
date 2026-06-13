@@ -45,8 +45,10 @@ public sealed class JsonConfigLoaderTests
     [Fact]
     public void GivenValidJson_WhenParseConfig_ThenReturnsPopulatedConfig()
     {
+        // Act
         GameConfig result = JsonConfigLoader.ParseConfig(ValidJson);
 
+        // Assert
         result.Grid.Columns.Should().Be(10);
         result.Grid.Rows.Should().Be(10);
         result.TileSize.Should().Be(64);
@@ -61,6 +63,7 @@ public sealed class JsonConfigLoaderTests
     [Fact]
     public void GivenJsonWithZeroColumns_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 0, "rows": 10 },
@@ -71,14 +74,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*columns*");
     }
 
     [Fact]
     public void GivenJsonWithZeroTileSize_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
@@ -89,14 +95,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*tileSize*");
     }
 
     [Fact]
     public void GivenJsonWithDuplicateItemNames_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
@@ -110,24 +119,30 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*Duplicate*");
     }
 
     [Fact]
     public void GivenMalformedJson_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = "{ this is not valid json }";
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*malformed*");
     }
 
     [Fact]
     public void GivenSpawnerWithAllZeroWeights_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
@@ -140,14 +155,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*weight*");
     }
 
     [Fact]
     public void GivenSpawnerReferencingUnknownItem_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
@@ -160,14 +178,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*unknown*");
     }
 
     [Fact]
     public void GivenJsonWithZeroRows_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 0 },
@@ -178,14 +199,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*rows*");
     }
 
     [Fact]
     public void GivenJsonWithNoItems_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
@@ -196,14 +220,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*items*");
     }
 
     [Fact]
     public void GivenItemWithEmptyName_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
@@ -214,14 +241,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*non-empty name*");
     }
 
     [Fact]
     public void GivenSpawnerColumnOutOfRange_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 5, "rows": 5 },
@@ -234,14 +264,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*column*");
     }
 
     [Fact]
     public void GivenSpawnerRowOutOfRange_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 5, "rows": 5 },
@@ -254,14 +287,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*row*");
     }
 
     [Fact]
     public void GivenSpawnerWithNoSpawnableItems_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 5, "rows": 5 },
@@ -274,14 +310,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*no spawnableItems*");
     }
 
     [Fact]
     public void GivenSpawnerWithEmptyName_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 5, "rows": 5 },
@@ -294,14 +333,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*non-empty name*");
     }
 
     [Fact]
     public void GivenSpawnerWithEmptyImage_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 5, "rows": 5 },
@@ -314,14 +356,17 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*image*");
     }
 
     [Fact]
     public void GivenSpawnerWithNegativeItemLimit_WhenParseConfig_ThenThrowsConfigurationException()
     {
+        // Arrange
         const string Json = """
             {
               "grid": { "columns": 5, "rows": 5 },
@@ -334,8 +379,10 @@ public sealed class JsonConfigLoaderTests
             }
             """;
 
+        // Act
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
+        // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*itemLimit*");
     }
 }

@@ -17,6 +17,7 @@ public sealed class MergeItemsHandlerTests
     [Fact]
     public void GivenTwoMatchingItems_WhenHandle_ThenReturnsSuccess()
     {
+        // Arrange
         ItemDefinition product = MakeDef("sticks", hasProduct: false);
         ItemDefinition chips = new ItemDefinition("chips", string.Empty, "chips.png", product);
         MergeGrid grid = new MergeGrid(5, 5);
@@ -27,8 +28,10 @@ public sealed class MergeItemsHandlerTests
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
+        // Act
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 
+        // Assert
         result.Should().BeOfType<MergeItemsResult.Success>()
             .Which.ProducedItem.Definition.Should().Be(product);
     }
@@ -36,6 +39,7 @@ public sealed class MergeItemsHandlerTests
     [Fact]
     public void GivenMismatchedItems_WhenHandle_ThenReturnsFailed()
     {
+        // Arrange
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
@@ -44,28 +48,34 @@ public sealed class MergeItemsHandlerTests
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
+        // Act
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 
+        // Assert
         result.Should().BeOfType<MergeItemsResult.Failed>();
     }
 
     [Fact]
     public void GivenEmptySourceCell_WhenHandle_ThenReturnsFailed()
     {
+        // Arrange
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition targetPos = new GridPosition(1, 0);
         grid.PlaceItem(new MergeItem(MakeDef("wood"), targetPos));
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
+        // Act
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(new GridPosition(0, 0), targetPos));
 
+        // Assert
         result.Should().BeOfType<MergeItemsResult.Failed>();
     }
 
     [Fact]
     public void GivenItemsAtFinalTier_WhenHandle_ThenReturnsFailed()
     {
+        // Arrange
         ItemDefinition finalDef = MakeDef("plank", hasProduct: false);
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
@@ -75,8 +85,10 @@ public sealed class MergeItemsHandlerTests
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid), Substitute.For<ISoundService>());
 
+        // Act
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 
+        // Assert
         result.Should().BeOfType<MergeItemsResult.Failed>();
     }
 
