@@ -1,99 +1,145 @@
-# Agentic C# Boilerplate
+# Merge Game
 
-A ready-to-use workspace template for building **C# / .NET applications with AI coding agents**. It
-gives every major agent platform the same high-quality engineering standards from a **single source
-of truth**, so your code stays consistent no matter which assistant you (or your team) use.
-
-> This repo contains **instructions and configuration only** — no application source code. Add your
-> own `src/` and `tests/` projects when you start building.
+A MonoGame merge puzzle game built on a clean, fully unit-tested core framework. Drag matching
+tiles together to merge them into a higher-tier item. Spawn new tiles from configurable spawner
+cells. Every rule, every item, and every image is driven by JSON config � no code changes required
+to add a new theme.
 
 ---
 
-## How it works: one source of truth, many adapters
+## How to play
 
-All the actual rules live **once** in [`agent-standards/`](agent-standards/). Every platform-specific
-file is a thin **adapter** that points back to those canonical documents by relative path. Update a
-standard in one place and every agent picks up the change — no duplication, no drift.
+- **Click a spawner cell** (green `+` tile) to produce a new item in a random empty cell.
+- **Drag an item** to an empty cell to move it.
+- **Drag an item** onto another item of the same type to merge them into the next tier.
+- Failed merges flash red. The window title shows your current move count.
+
+---
+
+## Building and running
+
+```bash
+# Restore & build all projects
+dotnet build src/MergeGame.sln
+
+# Run the game
+dotnet run --project src/MergeGame.Game
+
+# Run all unit tests
+dotnet test src/MergeGame.sln
+```
+
+> **Note:** The solution file lives inside `src/`. Run all commands from the repo root
+> or `cd src` first.
+
+---
+
+## Configuring the game
+
+Edit `src/MergeGame.Game/game.json`. The config drives everything � no recompilation needed.
+
+### Grid and tile size
+
+```json
+{
+  "grid": { "columns": 10, "rows": 10 },
+  "tileSize": 64
+}
+```
+
+### Item chains
+
+Items are defined as a nested chain. Two parents produce one child. Add as many tiers as you like.
+Each item needs a unique `name`, an optional `description`, and a path to a PNG image asset.
+
+```json
+"items": [
+  {
+    "name": "Wood Chips",
+    "description": "Small pieces of scrap wood",
+    "image": "Resources/1.png",
+    "product": {
+      "name": "Wood Sticks",
+      "description": "Small wooden sticks",
+      "image": "Resources/2.png",
+      "product": {
+        "name": "Plank",
+        "description": "A rough wooden plank",
+        "image": "Resources/3.png",
+        "product": null
+      }
+    }
+  }
+]
+```
+
+Multiple independent chains (e.g. Wood **and** Stone) are supported � add a second root entry to
+the `items` array.
+
+### Spawners
+
+Each spawner references item names from the chain and assigns a relative spawn weight.
+
+```json
+"spawners": [
+  {
+    "column": 0,
+    "row": 0,
+    "spawnableItems": [
+      { "itemName": "Wood Chips", "weight": 60 },
+      { "itemName": "Wood Sticks", "weight": 30 },
+      { "itemName": "Plank",       "weight": 10 }
+    ]
+  }
+]
+```
+
+### Adding your own images
+
+Place PNG files anywhere relative to the game executable (e.g. `Resources/my-item.png`) and
+reference the path in `game.json`. The files in `src/Resources/` are copied to the output
+directory automatically by the build.
+
+---
+
+## Architecture
+
+The codebase follows **Clean / Onion architecture** with strict layer boundaries:
 
 ```
-agent-standards/          ← the canonical rules (edit these)
-   ├── 00-overview.md          index + project facts
-   ├── 10-architecture.md      Clean/Onion layer boundaries
-   ├── 15-solid-design.md      SOLID design principles
-   ├── 20-csharp-style.md      formatting & naming
-   ├── 30-async.md             async/await & cancellation
-   ├── 40-efcore-data-access.md EF Core patterns
-   ├── 50-api-aspnet.md        ASP.NET Core API design
-   ├── 60-testing.md           xUnit testing standards
-   ├── 70-security-owasp.md    OWASP Top 10
-   ├── 90-loop-circuit-breaker.md self-correction protocol
-   └── custom/                 ← YOUR standards go here
+MergeGame.Domain          Zero dependencies � entities, value objects, domain rules
+MergeGame.Application     Use cases and handlers � depends on Domain only
+MergeGame.Infrastructure  Config loading (JSON) � depends on Domain + Application
+MergeGame.Game            MonoGame shell, rendering, input � composition root
+tests/MergeGame.UnitTests xUnit tests for Domain, Application, and Infrastructure
 ```
 
-### Which file does each platform read?
+Key design decisions:
 
-| Platform | Entry point(s) | Mechanism |
-| --- | --- | --- |
-| **Cross-tool** (Cursor, Cline, Roo, Copilot coding agent, Codex, Gemini) | [`AGENTS.md`](AGENTS.md) | Read natively from repo root |
-| **Claude Code** | [`CLAUDE.md`](CLAUDE.md) | Thin pointer to `AGENTS.md` |
-| **Gemini** | [`GEMINI.md`](GEMINI.md) | Thin pointer to `AGENTS.md` |
-| **GitHub Copilot** | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) + [`.github/instructions/`](.github/instructions/) | Repo-wide file + `applyTo` globbed instruction files |
-| **Cursor** | [`.cursor/rules/`](.cursor/rules/) | `*.mdc` rules with `description`/`globs`/`alwaysApply` |
-| **Cline** | [`.clinerules/`](.clinerules/) | Folder of `.md` rules, optional `paths:` scoping |
-| **Roo Code** | [`.roo/rules/`](.roo/rules/) | Folder read recursively; also reads `AGENTS.md` |
-| **Windsurf** | [`.windsurf/rules/`](.windsurf/rules/) + [`.windsurf/workflows/`](.windsurf/workflows/) | Rules with `trigger:` modes |
-
-Every one of those adapter files simply links back to the matching document in `agent-standards/`.
+| Decision | Choice |
+|---|---|
+| Item identity | `ItemDefinition` (name + image + chain link) � no integer levels |
+| Merge rule | Two items of the same `ItemDefinition` ? one item of `Definition.Product` |
+| Config format | Nested JSON `items` tree; spawners reference items by name |
+| Tile artwork | PNG files loaded at runtime via `Texture2D.FromStream`; no content pipeline |
+| Interaction | Drag-and-drop; drag to empty cell = move, drag to same type = merge |
+| Randomness | `IRandomProvider` interface � injected, deterministically testable |
+| DI | `Microsoft.Extensions.DependencyInjection`; singletons for domain, transient for handlers |
 
 ---
 
-## Where **you** add your own things
+## Project structure
 
-This template is laid out so your additions stay clearly separated from the shared backbone:
-
-1. **Your own coding standards →** drop a markdown file in
-   [`agent-standards/custom/`](agent-standards/custom/) and link it from
-   [`agent-standards/00-overview.md`](agent-standards/00-overview.md). All platforms inherit it
-   automatically because they reference the `agent-standards/` folder.
-2. **Repo-wide tweaks →** each platform's entry file has a clearly marked
-   `<!-- YOUR ADDITIONS -->` block at the bottom.
-3. **Project context for agents →** fill in the templates in [`memory_bank/`](memory_bank/).
-4. **Tooling config →** [`.editorconfig`](.editorconfig),
-   [`Directory.Build.props`](Directory.Build.props), and [`stylecop.json`](stylecop.json) enforce the
-   C# style, mandatory StyleCop analysis, and compiler settings in the build itself.
-
----
-
-## Getting started
-
-1. **Just start prompting — the agent asks for the project name.** On a fresh drop into a new
-   workspace, the agent's first action is to confirm your namespace prefix (the `YourApp`
-   placeholder) and apply it as it creates files. No manual find/replace needed. See
-   [`agent-standards/05-onboarding.md`](agent-standards/05-onboarding.md). _(You can still set the
-   name yourself up front if you prefer.)_
-2. **Adjust the target framework** in [`Directory.Build.props`](Directory.Build.props) if you aren't
-   on `net9.0`.
-3. **Add your projects.** The recommended layout (see [`AGENTS.md`](AGENTS.md)):
-   ```
-   src/YourApp.Domain          entities, value objects, interfaces (no dependencies)
-   src/YourApp.Application      use cases, DTOs (depends on Domain)
-   src/YourApp.Infrastructure   EF Core, repositories, external services
-   src/YourApp.Api              ASP.NET Core composition root
-   tests/YourApp.UnitTests      xUnit tests
-   ```
-4. **Add your own standards** under [`agent-standards/custom/`](agent-standards/custom/).
-5. **Keep `memory_bank/` current** as the project evolves.
-
----
-
-## Project conventions at a glance
-
-- Clean / Onion architecture with strict layer boundaries.
-- Allman braces, file-scoped namespaces, `#nullable enable`, `Async` suffix on async methods.
-- Flow `CancellationToken` through async chains.
-- No hard-coded secrets; validate all external input; deny-by-default authorization.
-
-See [`agent-standards/00-overview.md`](agent-standards/00-overview.md) for the full index.
-
-> **Note:** Build and publish happen on a separate machine — agents are instructed **not** to run
-> `dotnet build`, `dotnet test`, or `dotnet publish` in this workspace.
+```
+src/
+  MergeGame.Domain/           Entities, rules, interfaces
+  MergeGame.Application/      Commands, results, handlers, DTOs
+  MergeGame.Infrastructure/   Config loader, random provider
+  MergeGame.Game/             MonoGame entry point, rendering, input
+    game.json                 All game configuration
+  Resources/                  PNG tile images (1.png � 10.png)
+tests/
+  MergeGame.UnitTests/        46 unit tests
+agent-standards/              Coding standards for AI agents
+memory_bank/                  Project context and plan (PLAN.md)
+```

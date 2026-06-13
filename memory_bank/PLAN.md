@@ -167,7 +167,7 @@ Verification: drag item to empty cell → it moves; drag onto matching item → 
 
 ---
 
-## Phase 8 — Named Item Chains + Image Assets
+## Phase 7 — Named Item Chains + Image Assets  ✅
 
 **Deliverable:** Items have names, descriptions, and PNG images from `src/Resources/`.
 Merge chains are configured as a linked tree in JSON — no code changes to add a new theme.

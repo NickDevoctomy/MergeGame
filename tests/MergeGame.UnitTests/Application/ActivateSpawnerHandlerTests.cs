@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using FluentAssertions;
 
@@ -93,9 +93,8 @@ public sealed class ActivateSpawnerHandlerTests
 
     private static SpawnerDefinition CreateDefinition()
     {
-        return new SpawnerDefinition(new Dictionary<ItemLevel, int>
-        {
-            [new ItemLevel(1)] = 100,
-        });
+        ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
+
+        return new SpawnerDefinition(new Dictionary<ItemDefinition, int> { [def] = 100 });
     }
 }

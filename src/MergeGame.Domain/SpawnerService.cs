@@ -2,14 +2,14 @@ using System.Collections.Generic;
 
 namespace MergeGame.Domain;
 
-/// <summary>Selects a random <see cref="ItemLevel"/> from a <see cref="SpawnerDefinition"/> using weighted probability.</summary>
+/// <summary>Selects a random <see cref="ItemDefinition"/> from a <see cref="SpawnerDefinition"/> using weighted probability.</summary>
 public sealed class SpawnerService
 {
     /// <summary>
-    /// Returns a randomly chosen <see cref="ItemLevel"/> from <paramref name="definition"/>,
+    /// Returns a randomly chosen <see cref="ItemDefinition"/> from <paramref name="definition"/>,
     /// weighted according to its probability table.
     /// </summary>
-    public static ItemLevel SpawnItem(SpawnerDefinition definition, IRandomProvider randomProvider)
+    public static ItemDefinition SpawnItem(SpawnerDefinition definition, IRandomProvider randomProvider)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentNullException.ThrowIfNull(randomProvider);
@@ -23,8 +23,8 @@ public sealed class SpawnerService
         int roll = randomProvider.GetNext(0, total);
 
         int cumulative = 0;
-        ItemLevel last = default;
-        foreach (KeyValuePair<ItemLevel, int> entry in definition.Weights)
+        ItemDefinition? last = null;
+        foreach (KeyValuePair<ItemDefinition, int> entry in definition.Weights)
         {
             if (entry.Value <= 0)
             {
@@ -40,6 +40,6 @@ public sealed class SpawnerService
             }
         }
 
-        return last;
+        return last!;
     }
 }

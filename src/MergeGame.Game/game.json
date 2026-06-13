@@ -3,33 +3,71 @@
     "columns": 10,
     "rows": 10
   },
+  "tileSize": 64,
+  "items": [
+    {
+      "name": "Level 1",
+      "description": "The first tier",
+      "image": "Resources/1.png",
+      "product": {
+        "name": "Level 2",
+        "description": "The second tier",
+        "image": "Resources/2.png",
+        "product": {
+          "name": "Level 3",
+          "description": "The third tier",
+          "image": "Resources/3.png",
+          "product": {
+            "name": "Level 4",
+            "description": "The fourth tier",
+            "image": "Resources/4.png",
+            "product": {
+              "name": "Level 5",
+              "description": "The fifth tier",
+              "image": "Resources/5.png",
+              "product": {
+                "name": "Level 6",
+                "description": "The sixth tier",
+                "image": "Resources/6.png",
+                "product": {
+                  "name": "Level 7",
+                  "description": "The seventh tier",
+                  "image": "Resources/7.png",
+                  "product": {
+                    "name": "Level 8",
+                    "description": "The eighth tier",
+                    "image": "Resources/8.png",
+                    "product": {
+                      "name": "Level 9",
+                      "description": "The ninth tier",
+                      "image": "Resources/9.png",
+                      "product": {
+                        "name": "Level 10",
+                        "description": "The final tier",
+                        "image": "Resources/10.png",
+                        "product": null
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "spawners": [
     {
       "column": 0,
       "row": 0,
-      "weights": {
-        "1": 60,
-        "2": 30,
-        "3": 10
-      }
+      "spawnableItems": [
+        { "itemName": "Level 1", "weight": 60 },
+        { "itemName": "Level 2", "weight": 30 },
+        { "itemName": "Level 3", "weight": 10 }
+      ]
     }
   ],
-  "tiles": {
-    "tileSize": 64,
-    "maxLevel": 10,
-    "levelColors": {
-      "1": "#FF4444",
-      "2": "#FF8844",
-      "3": "#FFCC44",
-      "4": "#88CC44",
-      "5": "#44CC44",
-      "6": "#44CCAA",
-      "7": "#4488FF",
-      "8": "#8844FF",
-      "9": "#CC44FF",
-      "10": "#FFAAFF"
-    }
-  },
   "sounds": {
     "enabled": false,
     "soundFiles": {

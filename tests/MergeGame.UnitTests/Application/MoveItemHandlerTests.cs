@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using MergeGame.Application;
 using MergeGame.Application.Commands;
@@ -20,7 +20,7 @@ public sealed class MoveItemHandlerTests
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(2, 2);
-        grid.PlaceItem(new MergeItem(new ItemLevel(1), sourcePos));
+        grid.PlaceItem(new MergeItem(MakeDef("wood"), sourcePos));
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
 
@@ -35,13 +35,14 @@ public sealed class MoveItemHandlerTests
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(2, 2);
-        grid.PlaceItem(new MergeItem(new ItemLevel(3), sourcePos));
+        ItemDefinition def = MakeDef("stone");
+        grid.PlaceItem(new MergeItem(def, sourcePos));
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
         sut.Handle(new MoveItemCommand(sourcePos, targetPos));
 
         grid.GetCell(targetPos).Should().BeOfType<CellContent.Item>()
-            .Which.MergeItem.Level.Value.Should().Be(3);
+            .Which.MergeItem.Definition.Should().Be(def);
         grid.GetCell(sourcePos).Should().Be(CellContent.Empty.Instance);
     }
 
@@ -63,8 +64,8 @@ public sealed class MoveItemHandlerTests
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
-        grid.PlaceItem(new MergeItem(new ItemLevel(1), sourcePos));
-        grid.PlaceItem(new MergeItem(new ItemLevel(2), targetPos));
+        grid.PlaceItem(new MergeItem(MakeDef("a"), sourcePos));
+        grid.PlaceItem(new MergeItem(MakeDef("b"), targetPos));
 
         MoveItemHandler sut = new MoveItemHandler(CreateSession(grid));
 
@@ -77,8 +78,13 @@ public sealed class MoveItemHandlerTests
     {
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
-        session.MergeRule.Returns(new StandardMergeRule(maxLevel: 10));
+        session.MergeRule.Returns(new StandardMergeRule());
 
         return session;
+    }
+
+    private static ItemDefinition MakeDef(string name)
+    {
+        return new ItemDefinition(name, string.Empty, name + ".png", null);
     }
 }

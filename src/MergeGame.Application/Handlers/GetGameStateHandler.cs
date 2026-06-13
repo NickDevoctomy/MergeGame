@@ -34,10 +34,10 @@ public sealed class GetGameStateHandler
 
                 CellStateDto dto = cell switch
                 {
-                    CellContent.Empty => new CellStateDto(position, null, false, true),
-                    CellContent.Item item => new CellStateDto(position, item.MergeItem.Level.Value, false, false),
-                    CellContent.Spawner => new CellStateDto(position, null, true, false),
-                    _ => new CellStateDto(position, null, false, true),
+                    CellContent.Empty => new CellStateDto(position, null, null, false, true),
+                    CellContent.Item item => new CellStateDto(position, item.MergeItem.Definition.Name, item.MergeItem.Definition.ImagePath, false, false),
+                    CellContent.Spawner => new CellStateDto(position, null, null, true, false),
+                    _ => new CellStateDto(position, null, null, false, true),
                 };
 
                 cells.Add(dto);

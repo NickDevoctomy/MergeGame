@@ -7,10 +7,10 @@ public sealed class SpawnerDefinition
 {
     /// <summary>Initializes a new instance of the <see cref="SpawnerDefinition"/> class.</summary>
     /// <param name="weights">
-    /// Maps each spawnable <see cref="ItemLevel"/> to its relative weight.
+    /// Maps each spawnable <see cref="ItemDefinition"/> to its relative weight.
     /// The collection must be non-empty and the total weight must be greater than zero.
     /// </param>
-    public SpawnerDefinition(IReadOnlyDictionary<ItemLevel, int> weights)
+    public SpawnerDefinition(IReadOnlyDictionary<ItemDefinition, int> weights)
     {
         ArgumentNullException.ThrowIfNull(weights);
 
@@ -33,6 +33,6 @@ public sealed class SpawnerDefinition
         Weights = weights;
     }
 
-    /// <summary>Gets the spawn probability weights keyed by item level.</summary>
-    public IReadOnlyDictionary<ItemLevel, int> Weights { get; }
+    /// <summary>Gets the spawn probability weights keyed by item definition.</summary>
+    public IReadOnlyDictionary<ItemDefinition, int> Weights { get; }
 }

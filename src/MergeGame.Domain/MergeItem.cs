@@ -4,21 +4,22 @@ namespace MergeGame.Domain;
 public sealed class MergeItem
 {
     /// <summary>Initializes a new instance of the <see cref="MergeItem"/> class.</summary>
-    public MergeItem(ItemLevel level, GridPosition position)
+    public MergeItem(ItemDefinition definition, GridPosition position)
     {
-        Level = level;
+        ArgumentNullException.ThrowIfNull(definition);
+        Definition = definition;
         Position = position;
     }
 
-    /// <summary>Gets the item's current level.</summary>
-    public ItemLevel Level { get; }
+    /// <summary>Gets the item's definition (name, image, merge chain).</summary>
+    public ItemDefinition Definition { get; }
 
     /// <summary>Gets the item's position on the grid.</summary>
     public GridPosition Position { get; }
 
-    /// <summary>Returns a new item at a different grid position, preserving the level.</summary>
+    /// <summary>Returns a new item at a different grid position, preserving the definition.</summary>
     public MergeItem WithPosition(GridPosition position)
     {
-        return new MergeItem(Level, position);
+        return new MergeItem(Definition, position);
     }
 }

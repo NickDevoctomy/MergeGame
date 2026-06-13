@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using MergeGame.Application;
 using MergeGame.Application.Commands;
@@ -17,28 +17,30 @@ public sealed class MergeItemsHandlerTests
     [Fact]
     public void GivenTwoMatchingItems_WhenHandle_ThenReturnsSuccess()
     {
+        ItemDefinition product = MakeDef("sticks", hasProduct: false);
+        ItemDefinition chips = new ItemDefinition("chips", string.Empty, "chips.png", product);
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
-        grid.PlaceItem(new MergeItem(new ItemLevel(1), sourcePos));
-        grid.PlaceItem(new MergeItem(new ItemLevel(1), targetPos));
+        grid.PlaceItem(new MergeItem(chips, sourcePos));
+        grid.PlaceItem(new MergeItem(chips, targetPos));
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
 
         MergeItemsResult result = sut.Handle(new MergeItemsCommand(sourcePos, targetPos));
 
         result.Should().BeOfType<MergeItemsResult.Success>()
-            .Which.ProducedItem.Level.Value.Should().Be(2);
+            .Which.ProducedItem.Definition.Should().Be(product);
     }
 
     [Fact]
-    public void GivenMismatchedLevels_WhenHandle_ThenReturnsFailed()
+    public void GivenMismatchedItems_WhenHandle_ThenReturnsFailed()
     {
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
-        grid.PlaceItem(new MergeItem(new ItemLevel(1), sourcePos));
-        grid.PlaceItem(new MergeItem(new ItemLevel(2), targetPos));
+        grid.PlaceItem(new MergeItem(MakeDef("wood"), sourcePos));
+        grid.PlaceItem(new MergeItem(MakeDef("stone"), targetPos));
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
 
@@ -52,7 +54,7 @@ public sealed class MergeItemsHandlerTests
     {
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition targetPos = new GridPosition(1, 0);
-        grid.PlaceItem(new MergeItem(new ItemLevel(1), targetPos));
+        grid.PlaceItem(new MergeItem(MakeDef("wood"), targetPos));
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
 
@@ -62,13 +64,14 @@ public sealed class MergeItemsHandlerTests
     }
 
     [Fact]
-    public void GivenItemsAtMaxLevel_WhenHandle_ThenReturnsFailed()
+    public void GivenItemsAtFinalTier_WhenHandle_ThenReturnsFailed()
     {
+        ItemDefinition finalDef = MakeDef("plank", hasProduct: false);
         MergeGrid grid = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
-        grid.PlaceItem(new MergeItem(new ItemLevel(10), sourcePos));
-        grid.PlaceItem(new MergeItem(new ItemLevel(10), targetPos));
+        grid.PlaceItem(new MergeItem(finalDef, sourcePos));
+        grid.PlaceItem(new MergeItem(finalDef, targetPos));
 
         MergeItemsHandler sut = new MergeItemsHandler(CreateSession(grid));
 
@@ -81,8 +84,17 @@ public sealed class MergeItemsHandlerTests
     {
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
-        session.MergeRule.Returns(new StandardMergeRule(maxLevel: 10));
+        session.MergeRule.Returns(new StandardMergeRule());
 
         return session;
+    }
+
+    private static ItemDefinition MakeDef(string name, bool hasProduct = true)
+    {
+        ItemDefinition? product = hasProduct
+            ? new ItemDefinition(name + "_product", string.Empty, name + "_product.png", null)
+            : null;
+
+        return new ItemDefinition(name, string.Empty, name + ".png", product);
     }
 }

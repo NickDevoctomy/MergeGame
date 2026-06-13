@@ -44,7 +44,7 @@ internal sealed class InputHandler
         _activateSpawnerHandler = activateSpawnerHandler;
         _mergeItemsHandler = mergeItemsHandler;
         _moveItemHandler = moveItemHandler;
-        _tileSize = config.Tiles.TileSize;
+        _tileSize = config.TileSize;
         _offsetX = padding;
         _offsetY = padding;
         _columns = config.Grid.Columns;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -78,14 +79,20 @@ public sealed class JsonConfigLoader : IConfigLoader
             throw new ConfigurationException("grid.rows must be greater than zero.");
         }
 
-        if (config.Tiles.TileSize <= 0)
+        if (config.TileSize <= 0)
         {
-            throw new ConfigurationException("tiles.tileSize must be greater than zero.");
+            throw new ConfigurationException("tileSize must be greater than zero.");
         }
 
-        if (config.Tiles.MaxLevel <= 0)
+        if (config.Items.Count == 0)
         {
-            throw new ConfigurationException("tiles.maxLevel must be greater than zero.");
+            throw new ConfigurationException("items must contain at least one entry.");
+        }
+
+        HashSet<string> allNames = new HashSet<string>(System.StringComparer.Ordinal);
+        foreach (ItemChainConfig root in config.Items)
+        {
+            CollectAndValidateChain(root, allNames);
         }
 
         foreach (SpawnerConfig spawner in config.Spawners)
@@ -102,10 +109,22 @@ public sealed class JsonConfigLoader : IConfigLoader
                     $"Spawner row {spawner.Row} is outside the grid height {config.Grid.Rows}.");
             }
 
-            int totalWeight = 0;
-            foreach (int w in spawner.Weights.Values)
+            if (spawner.SpawnableItems.Count == 0)
             {
-                totalWeight += w;
+                throw new ConfigurationException(
+                    $"Spawner at ({spawner.Column},{spawner.Row}) has no spawnableItems entries.");
+            }
+
+            int totalWeight = 0;
+            foreach (SpawnableItemConfig si in spawner.SpawnableItems)
+            {
+                if (!allNames.Contains(si.ItemName))
+                {
+                    throw new ConfigurationException(
+                        $"Spawner at ({spawner.Column},{spawner.Row}) references unknown item '{si.ItemName}'.");
+                }
+
+                totalWeight += si.Weight;
             }
 
             if (totalWeight <= 0)
@@ -114,30 +133,23 @@ public sealed class JsonConfigLoader : IConfigLoader
                     $"Spawner at ({spawner.Column},{spawner.Row}) has no positive weights.");
             }
         }
-
-        foreach (System.Collections.Generic.KeyValuePair<int, string> kvp in config.Tiles.LevelColors)
-        {
-            ValidateHexColor(kvp.Value, kvp.Key);
-        }
     }
 
-    private static void ValidateHexColor(string hex, int level)
+    private static void CollectAndValidateChain(ItemChainConfig item, HashSet<string> names)
     {
-        string cleaned = hex.TrimStart('#');
-
-        if (cleaned.Length != 6)
+        if (string.IsNullOrWhiteSpace(item.Name))
         {
-            throw new ConfigurationException(
-                $"Level {level} colour '{hex}' is not a valid #RRGGBB hex colour.");
+            throw new ConfigurationException("Every item must have a non-empty name.");
         }
 
-        foreach (char c in cleaned)
+        if (!names.Add(item.Name))
         {
-            if (!Uri.IsHexDigit(c))
-            {
-                throw new ConfigurationException(
-                    $"Level {level} colour '{hex}' contains non-hex character '{c}'.");
-            }
+            throw new ConfigurationException($"Duplicate item name '{item.Name}' found in items configuration.");
+        }
+
+        if (item.Product is not null)
+        {
+            CollectAndValidateChain(item.Product, names);
         }
     }
 }

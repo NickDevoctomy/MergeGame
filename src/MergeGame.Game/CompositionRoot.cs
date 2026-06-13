@@ -5,7 +5,6 @@ using MergeGame.Application.Handlers;
 using MergeGame.Domain;
 using MergeGame.Infrastructure.Config;
 using MergeGame.Infrastructure.Random;
-using MergeGame.Infrastructure.Tiles;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,7 +24,7 @@ internal static class CompositionRoot
         MergeGrid grid = new MergeGrid(config.Grid.Columns, config.Grid.Rows);
         services.AddSingleton(grid);
 
-        IMergeRule mergeRule = new StandardMergeRule(config.Tiles.MaxLevel);
+        IMergeRule mergeRule = new StandardMergeRule();
         services.AddSingleton(mergeRule);
 
         services.AddSingleton<IRandomProvider, SystemRandomProvider>();
@@ -34,8 +33,6 @@ internal static class CompositionRoot
         services.AddSingleton<IGameSession>(sp => new GameSession(
             sp.GetRequiredService<MergeGrid>(),
             sp.GetRequiredService<IMergeRule>()));
-
-        services.AddSingleton<ITileGenerator>(new BmpTileGenerator(config.Tiles));
 
         services.AddTransient<ActivateSpawnerHandler>();
         services.AddTransient<MergeItemsHandler>();
@@ -50,18 +47,47 @@ internal static class CompositionRoot
         ArgumentNullException.ThrowIfNull(config);
         ArgumentNullException.ThrowIfNull(session);
 
+        Dictionary<string, ItemDefinition> itemsByName = BuildItemDictionary(config.Items);
+
         foreach (SpawnerConfig spawnerConfig in config.Spawners)
         {
-            Dictionary<ItemLevel, int> weights = new Dictionary<ItemLevel, int>();
+            var weights = new Dictionary<ItemDefinition, int>();
 
-            foreach (KeyValuePair<int, int> kvp in spawnerConfig.Weights)
+            foreach (SpawnableItemConfig si in spawnerConfig.SpawnableItems)
             {
-                weights[new ItemLevel(kvp.Key)] = kvp.Value;
+                if (itemsByName.TryGetValue(si.ItemName, out ItemDefinition? def))
+                {
+                    weights[def] = si.Weight;
+                }
             }
 
             SpawnerDefinition definition = new SpawnerDefinition(weights);
             GridPosition position = new GridPosition(spawnerConfig.Column, spawnerConfig.Row);
             session.Grid.PlaceSpawner(position, definition);
         }
+    }
+
+    private static Dictionary<string, ItemDefinition> BuildItemDictionary(List<ItemChainConfig> items)
+    {
+        var result = new Dictionary<string, ItemDefinition>(System.StringComparer.Ordinal);
+
+        foreach (ItemChainConfig root in items)
+        {
+            BuildDefinition(root, result);
+        }
+
+        return result;
+    }
+
+    private static ItemDefinition BuildDefinition(ItemChainConfig config, Dictionary<string, ItemDefinition> registry)
+    {
+        ItemDefinition? product = config.Product is not null
+            ? BuildDefinition(config.Product, registry)
+            : null;
+
+        var def = new ItemDefinition(config.Name, config.Description, config.Image, product);
+        registry[config.Name] = def;
+
+        return def;
     }
 }

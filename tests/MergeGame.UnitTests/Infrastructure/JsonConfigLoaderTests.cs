@@ -8,27 +8,50 @@ namespace MergeGame.UnitTests.Infrastructure;
 
 public sealed class JsonConfigLoaderTests
 {
+    private const string ValidJson = """
+        {
+          "grid": { "columns": 10, "rows": 10 },
+          "tileSize": 64,
+          "items": [
+            {
+              "name": "Wood Chips",
+              "description": "Scraps",
+              "image": "res/chips.png",
+              "product": {
+                "name": "Wood Sticks",
+                "description": "Sticks",
+                "image": "res/sticks.png",
+                "product": null
+              }
+            }
+          ],
+          "spawners": [
+            {
+              "column": 0,
+              "row": 0,
+              "spawnableItems": [
+                { "itemName": "Wood Chips", "weight": 100 }
+              ]
+            }
+          ],
+          "sounds": { "enabled": false, "soundFiles": {} }
+        }
+        """;
+
     [Fact]
     public void GivenValidJson_WhenParseConfig_ThenReturnsPopulatedConfig()
     {
-        const string Json = """
-            {
-              "grid": { "columns": 10, "rows": 10 },
-              "spawners": [{ "column": 0, "row": 0, "weights": { "1": 100 } }],
-              "tiles": { "tileSize": 64, "maxLevel": 10, "levelColors": { "1": "#FF0000" } },
-              "sounds": { "enabled": false, "soundFiles": {} }
-            }
-            """;
-
-        GameConfig result = JsonConfigLoader.ParseConfig(Json);
+        GameConfig result = JsonConfigLoader.ParseConfig(ValidJson);
 
         result.Grid.Columns.Should().Be(10);
         result.Grid.Rows.Should().Be(10);
-        result.Tiles.TileSize.Should().Be(64);
-        result.Tiles.MaxLevel.Should().Be(10);
+        result.TileSize.Should().Be(64);
+        result.Items.Should().HaveCount(1);
+        result.Items[0].Name.Should().Be("Wood Chips");
+        result.Items[0].Product!.Name.Should().Be("Wood Sticks");
         result.Spawners.Should().HaveCount(1);
-        result.Spawners[0].Column.Should().Be(0);
-        result.Spawners[0].Weights[1].Should().Be(100);
+        result.Spawners[0].SpawnableItems[0].ItemName.Should().Be("Wood Chips");
+        result.Spawners[0].SpawnableItems[0].Weight.Should().Be(100);
     }
 
     [Fact]
@@ -37,16 +60,16 @@ public sealed class JsonConfigLoaderTests
         const string Json = """
             {
               "grid": { "columns": 0, "rows": 10 },
+              "tileSize": 64,
+              "items": [{ "name": "a", "description": "", "image": "a.png", "product": null }],
               "spawners": [],
-              "tiles": { "tileSize": 64, "maxLevel": 10, "levelColors": {} },
               "sounds": { "enabled": false, "soundFiles": {} }
             }
             """;
 
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
-        act.Should().Throw<ConfigurationException>()
-            .WithMessage("*columns*");
+        act.Should().Throw<ConfigurationException>().WithMessage("*columns*");
     }
 
     [Fact]
@@ -55,33 +78,37 @@ public sealed class JsonConfigLoaderTests
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
+              "tileSize": 0,
+              "items": [{ "name": "a", "description": "", "image": "a.png", "product": null }],
               "spawners": [],
-              "tiles": { "tileSize": 0, "maxLevel": 10, "levelColors": {} },
               "sounds": { "enabled": false, "soundFiles": {} }
             }
             """;
 
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
-        act.Should().Throw<ConfigurationException>()
-            .WithMessage("*tileSize*");
+        act.Should().Throw<ConfigurationException>().WithMessage("*tileSize*");
     }
 
     [Fact]
-    public void GivenInvalidHexColor_WhenParseConfig_ThenThrowsConfigurationException()
+    public void GivenJsonWithDuplicateItemNames_WhenParseConfig_ThenThrowsConfigurationException()
     {
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
+              "tileSize": 64,
+              "items": [
+                { "name": "chips", "description": "", "image": "a.png", "product": null },
+                { "name": "chips", "description": "", "image": "b.png", "product": null }
+              ],
               "spawners": [],
-              "tiles": { "tileSize": 64, "maxLevel": 10, "levelColors": { "1": "NOTACOLOR" } },
               "sounds": { "enabled": false, "soundFiles": {} }
             }
             """;
 
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
-        act.Should().Throw<ConfigurationException>();
+        act.Should().Throw<ConfigurationException>().WithMessage("*Duplicate*");
     }
 
     [Fact]
@@ -91,8 +118,7 @@ public sealed class JsonConfigLoaderTests
 
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
-        act.Should().Throw<ConfigurationException>()
-            .WithMessage("*malformed*");
+        act.Should().Throw<ConfigurationException>().WithMessage("*malformed*");
     }
 
     [Fact]
@@ -101,15 +127,37 @@ public sealed class JsonConfigLoaderTests
         const string Json = """
             {
               "grid": { "columns": 10, "rows": 10 },
-              "spawners": [{ "column": 0, "row": 0, "weights": { "1": 0 } }],
-              "tiles": { "tileSize": 64, "maxLevel": 10, "levelColors": {} },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "column": 0, "row": 0, "spawnableItems": [{ "itemName": "chips", "weight": 0 }] }
+              ],
               "sounds": { "enabled": false, "soundFiles": {} }
             }
             """;
 
         Action act = () => JsonConfigLoader.ParseConfig(Json);
 
-        act.Should().Throw<ConfigurationException>()
-            .WithMessage("*weight*");
+        act.Should().Throw<ConfigurationException>().WithMessage("*weight*");
+    }
+
+    [Fact]
+    public void GivenSpawnerReferencingUnknownItem_WhenParseConfig_ThenThrowsConfigurationException()
+    {
+        const string Json = """
+            {
+              "grid": { "columns": 10, "rows": 10 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "column": 0, "row": 0, "spawnableItems": [{ "itemName": "unknown", "weight": 10 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        Action act = () => JsonConfigLoader.ParseConfig(Json);
+
+        act.Should().Throw<ConfigurationException>().WithMessage("*unknown*");
     }
 }

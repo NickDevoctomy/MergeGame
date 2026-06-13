@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using MergeGame.Domain;
 
@@ -8,13 +8,14 @@ namespace MergeGame.UnitTests.Domain;
 
 public sealed class StandardMergeRuleTests
 {
-    private readonly StandardMergeRule _sut = new StandardMergeRule(maxLevel: 10);
+    private readonly StandardMergeRule _sut = new StandardMergeRule();
 
     [Fact]
-    public void GivenTwoItemsOfSameLevel_WhenCanMerge_ThenReturnsTrue()
+    public void GivenTwoItemsWithSameDefinition_WhenCanMerge_ThenReturnsTrue()
     {
-        MergeItem a = new MergeItem(new ItemLevel(1), new GridPosition(0, 0));
-        MergeItem b = new MergeItem(new ItemLevel(1), new GridPosition(1, 0));
+        ItemDefinition def = MakeDef("wood", hasProduct: true);
+        MergeItem a = new MergeItem(def, new GridPosition(0, 0));
+        MergeItem b = new MergeItem(def, new GridPosition(1, 0));
 
         bool result = _sut.CanMerge(a, b);
 
@@ -22,10 +23,10 @@ public sealed class StandardMergeRuleTests
     }
 
     [Fact]
-    public void GivenTwoItemsOfDifferentLevel_WhenCanMerge_ThenReturnsFalse()
+    public void GivenTwoItemsWithDifferentDefinitions_WhenCanMerge_ThenReturnsFalse()
     {
-        MergeItem a = new MergeItem(new ItemLevel(1), new GridPosition(0, 0));
-        MergeItem b = new MergeItem(new ItemLevel(2), new GridPosition(1, 0));
+        MergeItem a = new MergeItem(MakeDef("wood", hasProduct: true), new GridPosition(0, 0));
+        MergeItem b = new MergeItem(MakeDef("stone", hasProduct: true), new GridPosition(1, 0));
 
         bool result = _sut.CanMerge(a, b);
 
@@ -33,10 +34,11 @@ public sealed class StandardMergeRuleTests
     }
 
     [Fact]
-    public void GivenBothItemsAtMaxLevel_WhenCanMerge_ThenReturnsFalse()
+    public void GivenBothItemsAtFinalTier_WhenCanMerge_ThenReturnsFalse()
     {
-        MergeItem a = new MergeItem(new ItemLevel(10), new GridPosition(0, 0));
-        MergeItem b = new MergeItem(new ItemLevel(10), new GridPosition(1, 0));
+        ItemDefinition finalDef = MakeDef("plank", hasProduct: false);
+        MergeItem a = new MergeItem(finalDef, new GridPosition(0, 0));
+        MergeItem b = new MergeItem(finalDef, new GridPosition(1, 0));
 
         bool result = _sut.CanMerge(a, b);
 
@@ -44,34 +46,37 @@ public sealed class StandardMergeRuleTests
     }
 
     [Fact]
-    public void GivenTwoMergeableItems_WhenMerge_ThenProducesItemAtNextLevel()
+    public void GivenTwoMergeableItems_WhenMerge_ThenProducesItemWithProductDefinition()
     {
-        MergeItem a = new MergeItem(new ItemLevel(3), new GridPosition(0, 0));
-        MergeItem b = new MergeItem(new ItemLevel(3), new GridPosition(1, 0));
+        ItemDefinition product = MakeDef("sticks", hasProduct: false);
+        ItemDefinition source = new ItemDefinition("chips", string.Empty, "chips.png", product);
+        MergeItem a = new MergeItem(source, new GridPosition(0, 0));
+        MergeItem b = new MergeItem(source, new GridPosition(1, 0));
         GridPosition target = new GridPosition(1, 0);
 
         MergeItem result = _sut.Merge(a, b, target);
 
-        result.Level.Value.Should().Be(4);
+        result.Definition.Should().Be(product);
         result.Position.Should().Be(target);
     }
 
     [Fact]
     public void GivenNonMergeableItems_WhenMerge_ThenThrowsInvalidOperationException()
     {
-        MergeItem a = new MergeItem(new ItemLevel(1), new GridPosition(0, 0));
-        MergeItem b = new MergeItem(new ItemLevel(2), new GridPosition(1, 0));
+        MergeItem a = new MergeItem(MakeDef("wood", hasProduct: true), new GridPosition(0, 0));
+        MergeItem b = new MergeItem(MakeDef("stone", hasProduct: true), new GridPosition(1, 0));
 
         Action act = () => _sut.Merge(a, b, new GridPosition(1, 0));
 
         act.Should().Throw<InvalidOperationException>();
     }
 
-    [Fact]
-    public void GivenZeroMaxLevel_WhenConstructed_ThenThrowsArgumentOutOfRangeException()
+    private static ItemDefinition MakeDef(string name, bool hasProduct)
     {
-        Action act = () => _ = new StandardMergeRule(maxLevel: 0);
+        ItemDefinition? product = hasProduct
+            ? new ItemDefinition(name + "_product", string.Empty, name + "_product.png", null)
+            : null;
 
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        return new ItemDefinition(name, string.Empty, name + ".png", product);
     }
 }

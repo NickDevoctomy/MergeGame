@@ -3,7 +3,6 @@ using MergeGame.Application.Handlers;
 using MergeGame.Game.Input;
 using MergeGame.Game.Rendering;
 using MergeGame.Infrastructure.Config;
-using MergeGame.Infrastructure.Tiles;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
@@ -33,8 +32,8 @@ public sealed class MergeGameMain : Microsoft.Xna.Framework.Game
         var configLoader = new JsonConfigLoader();
         _gameConfig = configLoader.Load();
 
-        _graphics.PreferredBackBufferWidth = (_gameConfig.Grid.Columns * _gameConfig.Tiles.TileSize) + (Padding * 2);
-        _graphics.PreferredBackBufferHeight = (_gameConfig.Grid.Rows * _gameConfig.Tiles.TileSize) + (Padding * 2);
+        _graphics.PreferredBackBufferWidth = (_gameConfig.Grid.Columns * _gameConfig.TileSize) + (Padding * 2);
+        _graphics.PreferredBackBufferHeight = (_gameConfig.Grid.Rows * _gameConfig.TileSize) + (Padding * 2);
         Window.Title = "Merge Game";
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
@@ -59,9 +58,7 @@ public sealed class MergeGameMain : Microsoft.Xna.Framework.Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         ServiceProvider sp = _serviceProvider!;
-        ITileGenerator tileGenerator = sp.GetRequiredService<ITileGenerator>();
-        _assetManager = new GameAssetManager(GraphicsDevice, tileGenerator);
-        _assetManager.PreloadTiles(_gameConfig.Tiles.MaxLevel);
+        _assetManager = new GameAssetManager(GraphicsDevice, _gameConfig.TileSize);
 
         ActivateSpawnerHandler activateHandler = sp.GetRequiredService<ActivateSpawnerHandler>();
         MergeItemsHandler mergeHandler = sp.GetRequiredService<MergeItemsHandler>();

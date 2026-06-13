@@ -11,9 +11,6 @@ public sealed class SpawnerConfig
     /// <summary>Gets or sets the row index of the spawner cell.</summary>
     public int Row { get; set; }
 
-    /// <summary>
-    /// Gets or sets the spawn probability weights.
-    /// Keys are item levels (integers); values are relative weights.
-    /// </summary>
-    public Dictionary<int, int> Weights { get; set; } = [];
+    /// <summary>Gets or sets the list of items this spawner can produce, with their relative weights.</summary>
+    public List<SpawnableItemConfig> SpawnableItems { get; set; } = [];
 }

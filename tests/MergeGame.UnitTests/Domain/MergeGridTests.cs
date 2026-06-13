@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using FluentAssertions;
 
@@ -10,7 +10,7 @@ namespace MergeGame.UnitTests.Domain;
 
 public sealed class MergeGridTests
 {
-    private readonly StandardMergeRule _rule = new StandardMergeRule(maxLevel: 10);
+    private readonly StandardMergeRule _rule = new StandardMergeRule();
 
     [Fact]
     public void GivenNewGrid_WhenGetCell_ThenAllCellsAreEmpty()
@@ -26,13 +26,14 @@ public sealed class MergeGridTests
     public void GivenEmptyCell_WhenPlaceItem_ThenCellContainsItem()
     {
         MergeGrid sut = new MergeGrid(5, 5);
-        MergeItem item = new MergeItem(new ItemLevel(1), new GridPosition(2, 2));
+        ItemDefinition def = MakeDef("wood");
+        MergeItem item = new MergeItem(def, new GridPosition(2, 2));
 
         sut.PlaceItem(item);
 
         CellContent cell = sut.GetCell(new GridPosition(2, 2));
         cell.Should().BeOfType<CellContent.Item>()
-            .Which.MergeItem.Level.Value.Should().Be(1);
+            .Which.MergeItem.Definition.Should().Be(def);
     }
 
     [Fact]
@@ -40,9 +41,9 @@ public sealed class MergeGridTests
     {
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition pos = new GridPosition(0, 0);
-        sut.PlaceItem(new MergeItem(new ItemLevel(1), pos));
+        sut.PlaceItem(new MergeItem(MakeDef("a"), pos));
 
-        Action act = () => sut.PlaceItem(new MergeItem(new ItemLevel(2), pos));
+        Action act = () => sut.PlaceItem(new MergeItem(MakeDef("b"), pos));
 
         act.Should().Throw<InvalidOperationException>();
     }
@@ -60,19 +61,21 @@ public sealed class MergeGridTests
     [Fact]
     public void GivenTwoMatchingItems_WhenTryMerge_ThenReturnsSuccessAndUpdatesGrid()
     {
+        ItemDefinition product = MakeDef("sticks", hasProduct: false);
+        ItemDefinition chips = new ItemDefinition("chips", string.Empty, "chips.png", product);
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
-        sut.PlaceItem(new MergeItem(new ItemLevel(2), sourcePos));
-        sut.PlaceItem(new MergeItem(new ItemLevel(2), targetPos));
+        sut.PlaceItem(new MergeItem(chips, sourcePos));
+        sut.PlaceItem(new MergeItem(chips, targetPos));
 
         MergeResult result = sut.TryMerge(sourcePos, targetPos, _rule);
 
         result.Should().BeOfType<MergeResult.Success>()
-            .Which.ProducedItem.Level.Value.Should().Be(3);
+            .Which.ProducedItem.Definition.Should().Be(product);
         sut.GetCell(sourcePos).Should().Be(CellContent.Empty.Instance);
         sut.GetCell(targetPos).Should().BeOfType<CellContent.Item>()
-            .Which.MergeItem.Level.Value.Should().Be(3);
+            .Which.MergeItem.Definition.Should().Be(product);
     }
 
     [Fact]
@@ -81,8 +84,8 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition sourcePos = new GridPosition(0, 0);
         GridPosition targetPos = new GridPosition(1, 0);
-        sut.PlaceItem(new MergeItem(new ItemLevel(1), sourcePos));
-        sut.PlaceItem(new MergeItem(new ItemLevel(2), targetPos));
+        sut.PlaceItem(new MergeItem(MakeDef("wood"), sourcePos));
+        sut.PlaceItem(new MergeItem(MakeDef("stone"), targetPos));
 
         MergeResult result = sut.TryMerge(sourcePos, targetPos, _rule);
 
@@ -94,7 +97,7 @@ public sealed class MergeGridTests
     {
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition targetPos = new GridPosition(1, 0);
-        sut.PlaceItem(new MergeItem(new ItemLevel(1), targetPos));
+        sut.PlaceItem(new MergeItem(MakeDef("wood"), targetPos));
 
         MergeResult result = sut.TryMerge(new GridPosition(0, 0), targetPos, _rule);
 
@@ -105,7 +108,7 @@ public sealed class MergeGridTests
     public void GivenPartiallyFilledGrid_WhenFindEmptyCells_ThenReturnsOnlyEmptyCells()
     {
         MergeGrid sut = new MergeGrid(2, 2);
-        sut.PlaceItem(new MergeItem(new ItemLevel(1), new GridPosition(0, 0)));
+        sut.PlaceItem(new MergeItem(MakeDef("wood"), new GridPosition(0, 0)));
 
         IReadOnlyList<GridPosition> empty = sut.FindEmptyCells();
 
@@ -119,7 +122,7 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition pos = new GridPosition(0, 0);
         SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int> { [new ItemLevel(1)] = 1 });
+            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 });
 
         sut.PlaceSpawner(pos, def);
 
@@ -132,7 +135,7 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(2, 2);
         GridPosition spawnerPos = new GridPosition(0, 0);
         SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int> { [new ItemLevel(1)] = 1 });
+            new Dictionary<ItemDefinition, int> { [MakeDef("wood")] = 1 });
         sut.PlaceSpawner(spawnerPos, def);
 
         IReadOnlyList<GridPosition> empty = sut.FindEmptyCells();
@@ -147,7 +150,7 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition source = new GridPosition(0, 0);
         GridPosition target = new GridPosition(3, 3);
-        sut.PlaceItem(new MergeItem(new ItemLevel(2), source));
+        sut.PlaceItem(new MergeItem(MakeDef("wood"), source));
 
         MoveResult result = sut.MoveItem(source, target);
 
@@ -160,13 +163,14 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition source = new GridPosition(0, 0);
         GridPosition target = new GridPosition(3, 3);
-        sut.PlaceItem(new MergeItem(new ItemLevel(2), source));
+        ItemDefinition def = MakeDef("stone");
+        sut.PlaceItem(new MergeItem(def, source));
 
         sut.MoveItem(source, target);
 
         sut.GetCell(source).Should().Be(CellContent.Empty.Instance);
         sut.GetCell(target).Should().BeOfType<CellContent.Item>()
-            .Which.MergeItem.Level.Value.Should().Be(2);
+            .Which.MergeItem.Definition.Should().Be(def);
     }
 
     [Fact]
@@ -185,11 +189,20 @@ public sealed class MergeGridTests
         MergeGrid sut = new MergeGrid(5, 5);
         GridPosition source = new GridPosition(0, 0);
         GridPosition target = new GridPosition(1, 0);
-        sut.PlaceItem(new MergeItem(new ItemLevel(1), source));
-        sut.PlaceItem(new MergeItem(new ItemLevel(1), target));
+        sut.PlaceItem(new MergeItem(MakeDef("a"), source));
+        sut.PlaceItem(new MergeItem(MakeDef("b"), target));
 
         MoveResult result = sut.MoveItem(source, target);
 
         result.Should().BeOfType<MoveResult.Failure>();
+    }
+
+    private static ItemDefinition MakeDef(string name, bool hasProduct = true)
+    {
+        ItemDefinition? product = hasProduct
+            ? new ItemDefinition(name + "_product", string.Empty, name + "_product.png", null)
+            : null;
+
+        return new ItemDefinition(name, string.Empty, name + ".png", product);
     }
 }

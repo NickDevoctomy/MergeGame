@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using FluentAssertions;
@@ -33,11 +33,12 @@ public sealed class GetGameStateHandlerTests
     }
 
     [Fact]
-    public void GivenItemOnGrid_WhenHandle_ThenSnapshotReflectsItemLevel()
+    public void GivenItemOnGrid_WhenHandle_ThenSnapshotReflectsItemNameAndImagePath()
     {
+        ItemDefinition def = new ItemDefinition("chips", "desc", "res/chips.png", null);
         MergeGrid grid = new MergeGrid(3, 3);
         GridPosition itemPos = new GridPosition(1, 1);
-        grid.PlaceItem(new MergeItem(new ItemLevel(5), itemPos));
+        grid.PlaceItem(new MergeItem(def, itemPos));
 
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
@@ -47,7 +48,8 @@ public sealed class GetGameStateHandlerTests
         GameStateSnapshot result = sut.Handle(new GetGameStateQuery());
 
         CellStateDto itemCell = result.Cells.Single(c => c.Position == itemPos);
-        itemCell.Level.Should().Be(5);
+        itemCell.ItemName.Should().Be("chips");
+        itemCell.ImagePath.Should().Be("res/chips.png");
         itemCell.IsEmpty.Should().BeFalse();
         itemCell.IsSpawner.Should().BeFalse();
     }
@@ -57,9 +59,10 @@ public sealed class GetGameStateHandlerTests
     {
         MergeGrid grid = new MergeGrid(3, 3);
         GridPosition spawnerPos = new GridPosition(0, 0);
-        SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int> { [new ItemLevel(1)] = 1 });
-        grid.PlaceSpawner(spawnerPos, def);
+        ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
+        SpawnerDefinition spawnerDef = new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int> { [def] = 1 });
+        grid.PlaceSpawner(spawnerPos, spawnerDef);
 
         IGameSession session = Substitute.For<IGameSession>();
         session.Grid.Returns(grid);
@@ -71,7 +74,8 @@ public sealed class GetGameStateHandlerTests
         CellStateDto spawnerCell = result.Cells.Single(c => c.Position == spawnerPos);
         spawnerCell.IsSpawner.Should().BeTrue();
         spawnerCell.IsEmpty.Should().BeFalse();
-        spawnerCell.Level.Should().BeNull();
+        spawnerCell.ItemName.Should().BeNull();
+        spawnerCell.ImagePath.Should().BeNull();
     }
 
     [Fact]

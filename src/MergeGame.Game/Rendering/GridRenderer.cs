@@ -36,7 +36,7 @@ internal sealed class GridRenderer
         _spriteBatch = spriteBatch;
         _assetManager = assetManager;
         _getGameStateHandler = getGameStateHandler;
-        _tileSize = config.Tiles.TileSize;
+        _tileSize = config.TileSize;
         _offsetX = padding;
         _offsetY = padding;
     }
@@ -95,7 +95,7 @@ internal sealed class GridRenderer
                 continue;
             }
 
-            Texture2D ghostTex = _assetManager.GetTile(cell.Level!.Value);
+            Texture2D ghostTex = _assetManager.GetTile(cell.ImagePath!);
             int halfTile = _tileSize / 2;
 
             _spriteBatch.Draw(
@@ -119,7 +119,7 @@ internal sealed class GridRenderer
             return _assetManager.EmptyTile;
         }
 
-        return _assetManager.GetTile(cell.Level!.Value);
+        return _assetManager.GetTile(cell.ImagePath!);
     }
 
     private void DrawBorder(int x, int y, Color color)

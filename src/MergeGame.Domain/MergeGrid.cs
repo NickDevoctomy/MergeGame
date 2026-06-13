@@ -99,7 +99,7 @@ public sealed class MergeGrid
         if (!rule.CanMerge(sourceCell.MergeItem, targetCell.MergeItem))
         {
             return new MergeResult.Failure(
-                $"Cannot merge items of level {sourceCell.MergeItem.Level.Value} and {targetCell.MergeItem.Level.Value}.");
+                $"Cannot merge '{sourceCell.MergeItem.Definition.Name}' with '{targetCell.MergeItem.Definition.Name}'.");
         }
 
         MergeItem produced = rule.Merge(sourceCell.MergeItem, targetCell.MergeItem, targetPosition);

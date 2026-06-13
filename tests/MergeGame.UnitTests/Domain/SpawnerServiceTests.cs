@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using FluentAssertions;
 
@@ -12,78 +12,81 @@ namespace MergeGame.UnitTests.Domain;
 
 public sealed class SpawnerServiceTests
 {
-    private readonly SpawnerService _sut = new SpawnerService();
-
     [Fact]
-    public void GivenSingleWeightEntry_WhenSpawnItem_ThenAlwaysReturnsOnlyLevel()
+    public void GivenSingleWeightEntry_WhenSpawnItem_ThenAlwaysReturnsOnlyDefinition()
     {
-        ItemLevel level = new ItemLevel(1);
-        SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int> { [level] = 100 });
+        ItemDefinition def = MakeDef("wood");
+        SpawnerDefinition spawnerDef = new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int> { [def] = 100 });
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(50);
 
-        ItemLevel result = SpawnerService.SpawnItem(def, random);
+        ItemDefinition result = SpawnerService.SpawnItem(spawnerDef, random);
 
-        result.Should().Be(level);
+        result.Should().Be(def);
     }
 
     [Fact]
-    public void GivenTwoWeights_WhenRollIsInFirstBand_ThenReturnsFirstLevel()
+    public void GivenTwoWeights_WhenRollIsInFirstBand_ThenReturnsFirstDefinition()
     {
-        ItemLevel levelOne = new ItemLevel(1);
-        ItemLevel levelTwo = new ItemLevel(2);
-        SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int>
+        ItemDefinition defOne = MakeDef("chips");
+        ItemDefinition defTwo = MakeDef("sticks");
+        SpawnerDefinition spawnerDef = new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int>
             {
-                [levelOne] = 60,
-                [levelTwo] = 40,
+                [defOne] = 60,
+                [defTwo] = 40,
             });
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(0);
 
-        ItemLevel result = SpawnerService.SpawnItem(def, random);
+        ItemDefinition result = SpawnerService.SpawnItem(spawnerDef, random);
 
-        result.Should().Be(levelOne);
+        result.Should().Be(defOne);
     }
 
     [Fact]
-    public void GivenTwoWeights_WhenRollIsInSecondBand_ThenReturnsSecondLevel()
+    public void GivenTwoWeights_WhenRollIsInSecondBand_ThenReturnsSecondDefinition()
     {
-        ItemLevel levelOne = new ItemLevel(1);
-        ItemLevel levelTwo = new ItemLevel(2);
-        SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int>
+        ItemDefinition defOne = MakeDef("chips");
+        ItemDefinition defTwo = MakeDef("sticks");
+        SpawnerDefinition spawnerDef = new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int>
             {
-                [levelOne] = 60,
-                [levelTwo] = 40,
+                [defOne] = 60,
+                [defTwo] = 40,
             });
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(60);
 
-        ItemLevel result = SpawnerService.SpawnItem(def, random);
+        ItemDefinition result = SpawnerService.SpawnItem(spawnerDef, random);
 
-        result.Should().Be(levelTwo);
+        result.Should().Be(defTwo);
     }
 
     [Fact]
     public void GivenZeroWeightEntry_WhenRollHitsZeroWeightBand_ThenZeroWeightEntryIsSkipped()
     {
-        ItemLevel levelOne = new ItemLevel(1);
-        ItemLevel levelTwo = new ItemLevel(2);
-        ItemLevel levelThree = new ItemLevel(3);
-        SpawnerDefinition def = new SpawnerDefinition(
-            new Dictionary<ItemLevel, int>
+        ItemDefinition defOne = MakeDef("chips");
+        ItemDefinition defTwo = MakeDef("sticks");
+        ItemDefinition defThree = MakeDef("plank");
+        SpawnerDefinition spawnerDef = new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int>
             {
-                [levelOne] = 0,
-                [levelTwo] = 50,
-                [levelThree] = 50,
+                [defOne] = 0,
+                [defTwo] = 50,
+                [defThree] = 50,
             });
         IRandomProvider random = Substitute.For<IRandomProvider>();
         random.GetNext(0, 100).Returns(0);
 
-        ItemLevel result = SpawnerService.SpawnItem(def, random);
+        ItemDefinition result = SpawnerService.SpawnItem(spawnerDef, random);
 
-        result.Should().NotBe(levelOne);
+        result.Should().NotBe(defOne);
+    }
+
+    private static ItemDefinition MakeDef(string name)
+    {
+        return new ItemDefinition(name, string.Empty, name + ".png", null);
     }
 }

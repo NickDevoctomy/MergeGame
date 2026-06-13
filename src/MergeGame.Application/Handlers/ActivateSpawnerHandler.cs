@@ -50,8 +50,8 @@ public sealed class ActivateSpawnerHandler
         int index = _randomProvider.GetNext(0, emptyCells.Count);
         GridPosition targetPosition = emptyCells[index];
 
-        ItemLevel level = SpawnerService.SpawnItem(spawnerCell.Definition, _randomProvider);
-        MergeItem item = new MergeItem(level, targetPosition);
+        ItemDefinition definition = SpawnerService.SpawnItem(spawnerCell.Definition, _randomProvider);
+        MergeItem item = new MergeItem(definition, targetPosition);
 
         _session.Grid.PlaceItem(item);
 
