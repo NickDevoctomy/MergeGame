@@ -11,7 +11,7 @@ You are a test engineer. Apply these rules to all test code (`tests/**`).
 - Name tests `Given_When_Then`
   - e.g. GivenCondition_AndOtherCondition_AndAntherCondition_WhenMethod_ThenOutcome_AndOtherOutcome_AndAnotherOutcome
   - Be descriptive
-- Follow **Arrange / Act / Assert**, separated by blank lines.
+- Each section of the test should be prefaced by a single line comment of 'Arrange', 'Act' or 'Assert'.
 - Do not add any additional comments
 - Try to keep Act line to a single 'sut' call where possible
 
