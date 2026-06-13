@@ -1,0 +1,12 @@
+---
+description: "Onboarding: confirm the project namespace before writing code in a new workspace."
+alwaysApply: true
+---
+
+# Onboarding — always applied
+
+Before generating or scaffolding any code in a new/empty workspace, confirm the project's namespace
+prefix (the `YourApp` placeholder) by asking the user one question — unless it is already given in the
+prompt, the folder name, or an existing project. Then apply that name as you create files.
+
+Full detail: [`agent-standards/05-onboarding.md`](../../agent-standards/05-onboarding.md).

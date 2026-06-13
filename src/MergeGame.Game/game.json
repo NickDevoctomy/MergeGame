@@ -1,0 +1,41 @@
+{
+  "grid": {
+    "columns": 10,
+    "rows": 10
+  },
+  "spawners": [
+    {
+      "column": 0,
+      "row": 0,
+      "weights": {
+        "1": 60,
+        "2": 30,
+        "3": 10
+      }
+    }
+  ],
+  "tiles": {
+    "tileSize": 64,
+    "maxLevel": 10,
+    "levelColors": {
+      "1": "#FF4444",
+      "2": "#FF8844",
+      "3": "#FFCC44",
+      "4": "#88CC44",
+      "5": "#44CC44",
+      "6": "#44CCAA",
+      "7": "#4488FF",
+      "8": "#8844FF",
+      "9": "#CC44FF",
+      "10": "#FFAAFF"
+    }
+  },
+  "sounds": {
+    "enabled": false,
+    "soundFiles": {
+      "merge": "sounds/merge.wav",
+      "spawn": "sounds/spawn.wav",
+      "invalid": "sounds/invalid.wav"
+    }
+  }
+}

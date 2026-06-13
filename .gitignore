@@ -1,0 +1,55 @@
+# --- .NET build artifacts ---
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+artifacts/
+
+# --- Test results & coverage ---
+[Tt]est[Rr]esult*/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# --- IDE / editor ---
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.user
+*.suo
+.idea/
+*.swp
+
+# --- Rider ---
+.idea/
+*.sln.iml
+
+# --- User-specific & secrets ---
+appsettings.*.local.json
+*.secrets.json
+secrets.json
+.env
+.env.*
+
+# --- NuGet ---
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!**/packages/build/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log

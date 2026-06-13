@@ -1,0 +1,15 @@
+---
+description: "SOLID object-oriented design principles. Apply when designing classes, interfaces, and dependencies."
+alwaysApply: false
+---
+
+# SOLID design principles
+
+Follow the canonical standard:
+
+- SOLID design principles → [`agent-standards/15-solid-design.md`](../../agent-standards/15-solid-design.md)
+
+Summary: Single Responsibility (one reason to change); Open/Closed (extend, don't modify);
+Liskov Substitution (subtypes honor contracts); Interface Segregation (small, focused interfaces);
+Dependency Inversion (depend on abstractions, inject dependencies). Apply judiciously — add an
+abstraction for a real need, not speculatively.

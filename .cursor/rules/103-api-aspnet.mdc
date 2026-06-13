@@ -1,0 +1,15 @@
+---
+description: "ASP.NET Core API conventions for the presentation layer."
+globs: "**/Api/**/*.cs,**/Web/**/*.cs"
+alwaysApply: false
+---
+
+# ASP.NET Core API conventions
+
+Follow the canonical standards:
+
+- API conventions → [`agent-standards/50-api-aspnet.md`](../../agent-standards/50-api-aspnet.md)
+- Security (OWASP) → [`agent-standards/70-security-owasp.md`](../../agent-standards/70-security-owasp.md)
+
+Summary: thin endpoints that delegate to Application use cases, request DTOs (not entities),
+ProblemDetails errors, correct status codes, flow `CancellationToken`, authorize by default.

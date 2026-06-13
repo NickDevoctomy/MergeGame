@@ -1,0 +1,49 @@
+<Project>
+
+  <!--
+    Solution-wide MSBuild defaults — the template counterpart to agent-standards/20-csharp-style.md.
+    Applies to every project once you add real .csproj files under src/ and tests/.
+    Adjust TargetFramework and analyzer levels to suit your project.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Nullable reference types enabled solution-wide (see agent-standards/20-csharp-style.md). -->
+    <Nullable>enable</Nullable>
+
+    <!-- Treat warnings as errors to keep the codebase clean; relax per-project if needed. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Built-in .NET analyzers at a strict level. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <AnalysisMode>Recommended</AnalysisMode>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Don't fail the build for missing XML doc comments. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    StyleCop is MANDATORY (see agent-standards/20-csharp-style.md).
+    Combined with TreatWarningsAsErrors above, every StyleCop violation fails the build and must be
+    fixed as it arises. Do not blanket-suppress rules — adjust stylecop.json or suppress an
+    individual rule with a written justification only when there is a genuine reason.
+  -->
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Share a single StyleCop configuration across every project in the solution. -->
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+</Project>

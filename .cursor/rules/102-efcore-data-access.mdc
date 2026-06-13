@@ -1,0 +1,15 @@
+---
+description: "Entity Framework Core data access performance and integrity standards."
+globs: "**/Infrastructure/**/*.cs,**/Persistence/**/*.cs,**/Repositories/**/*.cs,**/*DbContext*.cs"
+alwaysApply: false
+---
+
+# EF Core data access
+
+Follow the canonical standard:
+
+- EF Core data access → [`agent-standards/40-efcore-data-access.md`](../../agent-standards/40-efcore-data-access.md)
+
+Summary: `.AsNoTracking()` on reads, explicit `.Include()` (no lazy loading), project into DTOs,
+restrict `SaveChangesAsync()` to the use-case boundary, optimistic concurrency, pass
+`CancellationToken`, no hard-coded connection strings.

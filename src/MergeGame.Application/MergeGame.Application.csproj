@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MergeGame.Domain\MergeGame.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
