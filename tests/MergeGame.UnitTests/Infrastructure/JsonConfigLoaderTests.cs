@@ -385,4 +385,69 @@ public sealed class JsonConfigLoaderTests
         // Assert
         act.Should().Throw<ConfigurationException>().WithMessage("*itemLimit*");
     }
+
+    [Fact]
+    public void GivenItemWithBackgroundColor_WhenParseConfig_ThenBackgroundColorIsDeserialized()
+    {
+        // Arrange
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "backgroundColor": "#FF8800", "product": null }],
+              "spawners": [],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        // Act
+        GameConfig result = JsonConfigLoader.ParseConfig(Json);
+
+        // Assert
+        result.Items[0].BackgroundColor.Should().Be("#FF8800");
+    }
+
+    [Fact]
+    public void GivenItemWithNoBackgroundColor_WhenParseConfig_ThenBackgroundColorIsNull()
+    {
+        // Arrange
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        // Act
+        GameConfig result = JsonConfigLoader.ParseConfig(Json);
+
+        // Assert
+        result.Items[0].BackgroundColor.Should().BeNull();
+    }
+
+    [Fact]
+    public void GivenSpawnerWithBackgroundColor_WhenParseConfig_ThenBackgroundColorIsDeserialized()
+    {
+        // Arrange
+        const string Json = """
+            {
+              "grid": { "columns": 5, "rows": 5 },
+              "tileSize": 64,
+              "items": [{ "name": "chips", "description": "", "image": "a.png", "product": null }],
+              "spawners": [
+                { "name": "S", "image": "s.png", "column": 0, "row": 0, "backgroundColor": "#4a3728", "spawnableItems": [{ "itemName": "chips", "weight": 1 }] }
+              ],
+              "sounds": { "enabled": false, "soundFiles": {} }
+            }
+            """;
+
+        // Act
+        GameConfig result = JsonConfigLoader.ParseConfig(Json);
+
+        // Assert
+        result.Spawners[0].BackgroundColor.Should().Be("#4a3728");
+    }
 }

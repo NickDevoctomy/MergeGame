@@ -59,9 +59,10 @@
   ],
   "spawners": [
     {
-      "name": "Numberwang",
-      "description": "Spawns random low level numbers",
-      "image": "Resources/numberwang.png",
+      "name": "Wood Scraps",
+      "description": "Various scraps of wood in a small metal bin. Can be merged into higher quality wood.",
+      "image": "Resources/woodscraps.png",
+      "backgroundColor": "#FFFFFF",
       "column": 0,
       "row": 0,
       "itemLimit": 50,

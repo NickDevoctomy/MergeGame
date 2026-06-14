@@ -1,3 +1,6 @@
+using System;
+using System.Globalization;
+
 using MergeGame.Application.Dtos;
 using MergeGame.Application.Handlers;
 using MergeGame.Application.Queries;
@@ -64,12 +67,49 @@ internal sealed class GridRenderer
         _spriteBatch.End();
     }
 
+    private static bool TryParseHexColor(string hex, out Color color)
+    {
+        color = Color.Transparent;
+        ReadOnlySpan<char> span = hex.AsSpan();
+
+        if (span.Length > 0 && span[0] == '#')
+        {
+            span = span[1..];
+        }
+
+        if (span.Length == 6
+            && byte.TryParse(span[0..2], NumberStyles.HexNumber, null, out byte r6)
+            && byte.TryParse(span[2..4], NumberStyles.HexNumber, null, out byte g6)
+            && byte.TryParse(span[4..6], NumberStyles.HexNumber, null, out byte b6))
+        {
+            color = new Color(r6, g6, b6);
+            return true;
+        }
+
+        if (span.Length == 8
+            && byte.TryParse(span[0..2], NumberStyles.HexNumber, null, out byte r8)
+            && byte.TryParse(span[2..4], NumberStyles.HexNumber, null, out byte g8)
+            && byte.TryParse(span[4..6], NumberStyles.HexNumber, null, out byte b8)
+            && byte.TryParse(span[6..8], NumberStyles.HexNumber, null, out byte a8))
+        {
+            color = new Color(r8, g8, b8, a8);
+            return true;
+        }
+
+        return false;
+    }
+
     private void DrawCell(CellStateDto cell, GridPosition? dragSource, GridPosition? failedTarget)
     {
-        Texture2D texture = ResolveTexture(cell);
         int x = _offsetX + (cell.Position.Column * _tileSize);
         int y = _offsetY + (cell.Position.Row * _tileSize);
 
+        if (!string.IsNullOrEmpty(cell.BackgroundColor) && TryParseHexColor(cell.BackgroundColor, out Color bgColor))
+        {
+            _spriteBatch.Draw(_assetManager.WhitePixel, new Rectangle(x, y, _tileSize, _tileSize), bgColor);
+        }
+
+        Texture2D texture = ResolveTexture(cell);
         bool isBeingDragged = dragSource.HasValue && dragSource.Value == cell.Position;
         Color tint = isBeingDragged ? Color.White * 0.4f : Color.White;
 

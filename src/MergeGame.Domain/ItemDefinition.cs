@@ -10,7 +10,8 @@ public sealed class ItemDefinition : IEquatable<ItemDefinition>
     /// <param name="description">A short description shown to the player.</param>
     /// <param name="imagePath">Relative path to the PNG image asset for this item.</param>
     /// <param name="product">The item produced when two of this type are merged, or <see langword="null"/> if this is the final tier.</param>
-    public ItemDefinition(string name, string description, string imagePath, ItemDefinition? product)
+    /// <param name="backgroundColor">Optional CSS hex colour string (e.g. <c>#FF8800</c>) drawn behind the tile image.</param>
+    public ItemDefinition(string name, string description, string imagePath, ItemDefinition? product, string? backgroundColor = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(imagePath);
@@ -19,6 +20,7 @@ public sealed class ItemDefinition : IEquatable<ItemDefinition>
         Description = description ?? string.Empty;
         ImagePath = imagePath;
         Product = product;
+        BackgroundColor = backgroundColor;
     }
 
     /// <summary>Gets the unique name of this item type.</summary>
@@ -29,6 +31,9 @@ public sealed class ItemDefinition : IEquatable<ItemDefinition>
 
     /// <summary>Gets the relative path to this item's PNG image asset.</summary>
     public string ImagePath { get; }
+
+    /// <summary>Gets the optional background colour as a CSS hex string (e.g. <c>#FF8800</c>), drawn behind the tile image.</summary>
+    public string? BackgroundColor { get; }
 
     /// <summary>Gets the item produced when two of this item are merged, or <see langword="null"/> if this is the final tier.</summary>
     public ItemDefinition? Product { get; }

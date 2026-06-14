@@ -14,6 +14,9 @@ public sealed class SpawnerConfig
     /// <summary>Gets or sets the image path for this spawner's tile.</summary>
     public string Image { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the background colour drawn behind the tile image, as a CSS hex string (e.g. <c>#FF8800</c> or <c>#FF8800FF</c>). Optional.</summary>
+    public string? BackgroundColor { get; set; }
+
     /// <summary>Gets or sets the column index of the spawner cell.</summary>
     public int Column { get; set; }
 

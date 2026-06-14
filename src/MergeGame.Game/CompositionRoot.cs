@@ -71,7 +71,8 @@ internal static class CompositionRoot
                 spawnerConfig.Name,
                 spawnerConfig.Description,
                 spawnerConfig.Image,
-                spawnerConfig.ItemLimit);
+                spawnerConfig.ItemLimit,
+                spawnerConfig.BackgroundColor);
             GridPosition position = new GridPosition(spawnerConfig.Column, spawnerConfig.Row);
             session.Grid.PlaceSpawner(position, definition);
         }
@@ -95,7 +96,7 @@ internal static class CompositionRoot
             ? BuildDefinition(config.Product, registry)
             : null;
 
-        var def = new ItemDefinition(config.Name, config.Description, config.Image, product);
+        var def = new ItemDefinition(config.Name, config.Description, config.Image, product, config.BackgroundColor);
         registry[config.Name] = def;
 
         return def;

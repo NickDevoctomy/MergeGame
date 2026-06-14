@@ -17,12 +17,14 @@ public sealed class SpawnerDefinition
     /// Maximum number of items this spawner may produce before being removed from the grid.
     /// Zero means unlimited.
     /// </param>
+    /// <param name="backgroundColor">Optional CSS hex colour string (e.g. <c>#FF8800</c>) drawn behind the tile image.</param>
     public SpawnerDefinition(
         IReadOnlyDictionary<ItemDefinition, int> weights,
         string name,
         string description,
         string imagePath,
-        int itemLimit = 0)
+        int itemLimit = 0,
+        string? backgroundColor = null)
     {
         ArgumentNullException.ThrowIfNull(weights);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -55,6 +57,7 @@ public sealed class SpawnerDefinition
         Description = description;
         ImagePath = imagePath;
         ItemLimit = itemLimit;
+        BackgroundColor = backgroundColor;
     }
 
     /// <summary>Gets the display name of this spawner.</summary>
@@ -65,6 +68,9 @@ public sealed class SpawnerDefinition
 
     /// <summary>Gets the image path for this spawner's tile.</summary>
     public string ImagePath { get; }
+
+    /// <summary>Gets the optional background colour as a CSS hex string (e.g. <c>#FF8800</c>), drawn behind the tile image.</summary>
+    public string? BackgroundColor { get; }
 
     /// <summary>Gets the maximum number of items this spawner may produce. Zero means unlimited.</summary>
     public int ItemLimit { get; }

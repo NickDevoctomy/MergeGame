@@ -157,6 +157,34 @@ public sealed class SpawnerDefinitionTests
         sut.SpawnCount.Should().Be(2);
     }
 
+    [Fact]
+    public void GivenBackgroundColor_WhenConstructed_ThenBackgroundColorIsStored()
+    {
+        // Arrange
+        ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
+        var weights = new Dictionary<ItemDefinition, int> { [def] = 1 };
+
+        // Act
+        SpawnerDefinition sut = new SpawnerDefinition(weights, "Spawner", string.Empty, "s.png", backgroundColor: "#4a3728");
+
+        // Assert
+        sut.BackgroundColor.Should().Be("#4a3728");
+    }
+
+    [Fact]
+    public void GivenNoBackgroundColor_WhenConstructed_ThenBackgroundColorIsNull()
+    {
+        // Arrange
+        ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
+        var weights = new Dictionary<ItemDefinition, int> { [def] = 1 };
+
+        // Act
+        SpawnerDefinition sut = new SpawnerDefinition(weights, "Spawner", string.Empty, "s.png");
+
+        // Assert
+        sut.BackgroundColor.Should().BeNull();
+    }
+
     private static SpawnerDefinition MakeDefinition(int itemLimit = 0)
     {
         ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);

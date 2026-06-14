@@ -21,11 +21,14 @@ internal sealed class GameAssetManager
 
         EmptyTile = CreateColoredTile(0x2A, 0x2A, 0x2A);
         SpawnerTile = CreateColoredTile(0x1A, 0x4A, 0x1A);
+        WhitePixel = CreateColoredTile(0xFF, 0xFF, 0xFF);
     }
 
     internal Texture2D EmptyTile { get; }
 
     internal Texture2D SpawnerTile { get; }
+
+    internal Texture2D WhitePixel { get; }
 
     internal Texture2D GetTile(string imagePath)
     {

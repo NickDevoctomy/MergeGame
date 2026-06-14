@@ -108,4 +108,76 @@ public sealed class GetGameStateHandlerTests
         result.Rows.Should().Be(6);
         result.Cells.Should().HaveCount(24);
     }
+
+    [Fact]
+    public void GivenItemWithBackgroundColor_WhenHandle_ThenSnapshotCellCarriesBackgroundColor()
+    {
+        // Arrange
+        ItemDefinition def = new ItemDefinition("chip", string.Empty, "chip.png", null, "#FF8800");
+        MergeGrid grid = new MergeGrid(2, 2);
+        GridPosition pos = new GridPosition(0, 0);
+        grid.PlaceItem(new MergeItem(def, pos));
+
+        IGameSession session = Substitute.For<IGameSession>();
+        session.Grid.Returns(grid);
+
+        GetGameStateHandler sut = new GetGameStateHandler(session);
+
+        // Act
+        GameStateSnapshot result = sut.Handle(new GetGameStateQuery());
+
+        // Assert
+        CellStateDto cell = result.Cells.Single(c => c.Position == pos);
+        cell.BackgroundColor.Should().Be("#FF8800");
+    }
+
+    [Fact]
+    public void GivenSpawnerWithBackgroundColor_WhenHandle_ThenSnapshotCellCarriesBackgroundColor()
+    {
+        // Arrange
+        ItemDefinition def = new ItemDefinition("wood", string.Empty, "wood.png", null);
+        SpawnerDefinition spawnerDef = new SpawnerDefinition(
+            new Dictionary<ItemDefinition, int> { [def] = 1 },
+            "Spawner",
+            string.Empty,
+            "spawner.png",
+            backgroundColor: "#4a3728");
+        MergeGrid grid = new MergeGrid(2, 2);
+        GridPosition pos = new GridPosition(0, 0);
+        grid.PlaceSpawner(pos, spawnerDef);
+
+        IGameSession session = Substitute.For<IGameSession>();
+        session.Grid.Returns(grid);
+
+        GetGameStateHandler sut = new GetGameStateHandler(session);
+
+        // Act
+        GameStateSnapshot result = sut.Handle(new GetGameStateQuery());
+
+        // Assert
+        CellStateDto cell = result.Cells.Single(c => c.Position == pos);
+        cell.BackgroundColor.Should().Be("#4a3728");
+    }
+
+    [Fact]
+    public void GivenItemWithNoBackgroundColor_WhenHandle_ThenSnapshotCellBackgroundColorIsNull()
+    {
+        // Arrange
+        ItemDefinition def = new ItemDefinition("chip", string.Empty, "chip.png", null);
+        MergeGrid grid = new MergeGrid(2, 2);
+        GridPosition pos = new GridPosition(0, 0);
+        grid.PlaceItem(new MergeItem(def, pos));
+
+        IGameSession session = Substitute.For<IGameSession>();
+        session.Grid.Returns(grid);
+
+        GetGameStateHandler sut = new GetGameStateHandler(session);
+
+        // Act
+        GameStateSnapshot result = sut.Handle(new GetGameStateQuery());
+
+        // Assert
+        CellStateDto cell = result.Cells.Single(c => c.Position == pos);
+        cell.BackgroundColor.Should().BeNull();
+    }
 }
