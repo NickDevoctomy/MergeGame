@@ -6,17 +6,20 @@
   "tileSize": 64,
   "items": [
     {
-      "name": "Level 1",
-      "description": "The first tier",
-      "image": "Resources/1.png",
+      "name": "Small pile of wood scraps",
+      "description": "Small pile of low quality wood scraps.",
+      "image": "Resources/pileofwoodscraps.png",
+	    "backgroundColor": "#FFFFFF",
       "product": {
-        "name": "Level 2",
-        "description": "The second tier",
-        "image": "Resources/2.png",
+        "name": "Bundle of wooden sticks",
+        "description": "Small bundle of wooden sticks, tied together with a piece of string.",
+        "image": "Resources/bundleofwoodsticks.png",
+        "backgroundColor": "#FFFFFF",
         "product": {
-          "name": "Level 3",
-          "description": "The third tier",
-          "image": "Resources/3.png",
+          "name": "Small stack of wooden boards",
+          "description": "A small stack of wooden boards.",
+          "image": "Resources/stackofwoodboards.png",
+          "backgroundColor": "#FFFFFF",
           "product": {
             "name": "Level 4",
             "description": "The fourth tier",
@@ -60,16 +63,16 @@
   "spawners": [
     {
       "name": "Wood Scraps",
-      "description": "Various scraps of wood in a small metal bin. Can be merged into higher quality wood.",
-      "image": "Resources/woodscraps.png",
+      "description": "Various scraps of wood in a small metal bin.",
+      "image": "Resources/boxofwoodscraps.png",
       "backgroundColor": "#FFFFFF",
       "column": 0,
       "row": 0,
       "itemLimit": 50,
       "spawnableItems": [
-        { "itemName": "Level 1", "weight": 60 },
-        { "itemName": "Level 2", "weight": 30 },
-        { "itemName": "Level 3", "weight": 10 }
+        { "itemName": "Small pile of wood scraps", "weight": 60 },
+        { "itemName": "Bundle of wooden sticks", "weight": 30 },
+        { "itemName": "Small stack of wooden boards", "weight": 10 }
       ]
     }
   ],
