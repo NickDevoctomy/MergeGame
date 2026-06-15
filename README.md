@@ -2,7 +2,7 @@
 
 A MonoGame merge puzzle game built on a clean, fully unit-tested core framework. Drag matching
 tiles together to merge them into a higher-tier item. Spawn new tiles from configurable spawner
-cells. Every rule, every item, and every image is driven by JSON config — no code changes required
+cells. Every rule, every item, and every image is driven by JSON config ï¿½ no code changes required
 to add a new theme.
 
 ---
@@ -36,7 +36,7 @@ dotnet test src/MergeGame.sln
 
 ## Configuring the game
 
-Edit `src/MergeGame.Game/game.json`. The config drives everything — no recompilation needed.
+Edit `src/MergeGame.Game/game.json`. The config drives everything ï¿½ no recompilation needed.
 
 ### Grid and tile size
 
@@ -73,7 +73,7 @@ Each item needs a unique `name`, an optional `description`, and a path to a PNG 
 ]
 ```
 
-Multiple independent chains (e.g. Wood **and** Stone) are supported — add a second root entry to
+Multiple independent chains (e.g. Wood **and** Stone) are supported ï¿½ add a second root entry to
 the `items` array.
 
 ### Spawners
@@ -107,10 +107,10 @@ directory automatically by the build.
 The codebase follows **Clean / Onion architecture** with strict layer boundaries:
 
 ```
-MergeGame.Domain          Zero dependencies — entities, value objects, domain rules
-MergeGame.Application     Use cases and handlers — depends on Domain only
-MergeGame.Infrastructure  Config loading (JSON) — depends on Domain + Application
-MergeGame.Game            MonoGame shell, rendering, input — composition root
+MergeGame.Domain          Zero dependencies ï¿½ entities, value objects, domain rules
+MergeGame.Application     Use cases and handlers ï¿½ depends on Domain only
+MergeGame.Infrastructure  Config loading (JSON) ï¿½ depends on Domain + Application
+MergeGame.Game            MonoGame shell, rendering, input ï¿½ composition root
 tests/MergeGame.UnitTests xUnit tests for Domain, Application, and Infrastructure
 ```
 
@@ -118,12 +118,12 @@ Key design decisions:
 
 | Decision | Choice |
 |---|---|
-| Item identity | `ItemDefinition` (name + image + chain link) — no integer levels |
+| Item identity | `ItemDefinition` (name + image + chain link) ï¿½ no integer levels |
 | Merge rule | Two items of the same `ItemDefinition` ? one item of `Definition.Product` |
 | Config format | Nested JSON `items` tree; spawners reference items by name |
 | Tile artwork | PNG files loaded at runtime via `Texture2D.FromStream`; no content pipeline |
 | Interaction | Drag-and-drop; drag to empty cell = move, drag to same type = merge |
-| Randomness | `IRandomProvider` interface — injected, deterministically testable |
+| Randomness | `IRandomProvider` interface ï¿½ injected, deterministically testable |
 | DI | `Microsoft.Extensions.DependencyInjection`; singletons for domain, transient for handlers |
 
 ---
@@ -137,9 +137,8 @@ src/
   MergeGame.Infrastructure/   Config loader, random provider
   MergeGame.Game/             MonoGame entry point, rendering, input
     game.json                 All game configuration
-  Resources/                  PNG tile images (1.png – 10.png)
+  Resources/                  PNG tile images (1.png ï¿½ 10.png)
 tests/
   MergeGame.UnitTests/        46 unit tests
-agent-standards/              Coding standards for AI agents
 memory_bank/                  Project context and plan (PLAN.md)
 ```

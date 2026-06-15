@@ -28,7 +28,7 @@ needed up front — substitute as you create files):
 ## Confirm the other project facts
 
 While onboarding, confirm (or accept sensible defaults for) the values listed under **Project facts**
-in [`00-overview.md`](00-overview.md): target framework, primary database engine, and test framework.
+in [`00-overview.instructions.md`](00-overview.instructions.md): target framework, primary database engine, and test framework.
 Update that section and the `memory_bank/` files with the answers.
 
 > Do not run `dotnet build`/`test`/`publish` in this workspace — the maintainer builds elsewhere.

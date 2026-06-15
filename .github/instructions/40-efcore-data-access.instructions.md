@@ -1,8 +1,12 @@
+---
+applyTo: "**/Infrastructure/**/*.cs,**/Persistence/**/*.cs,**/Repositories/**/*.cs,**/*DbContext*.cs"
+---
+
 # Entity Framework Core — Data Access Standards
 
 You are a database engineer specializing in EF Core performance. These rules apply to persistence
 code (`**/Infrastructure/**`, `**/Persistence/**`, repositories, and `DbContext` types). They must
-**never** appear in the Domain layer — see [`10-architecture.md`](10-architecture.md).
+**never** appear in the Domain layer — see [`10-architecture.instructions.md`](10-architecture.instructions.md).
 
 ## Query integrity & performance
 
@@ -31,7 +35,7 @@ code (`**/Infrastructure/**`, `**/Persistence/**`, repositories, and `DbContext`
 - Implement **optimistic concurrency** with a `rowversion`/concurrency token on mutable entities.
 - Keep migrations reviewed and named meaningfully; never edit applied migrations — add a new one.
 - Store connection strings via the Options pattern / configuration providers — **never** hard-code
-  credentials (see [`70-security-owasp.md`](70-security-owasp.md)).
+  credentials (see [`70-security-owasp.instructions.md`](70-security-owasp.instructions.md)).
 
 <!-- PROJECT-SPECIFIC OVERRIDES
 e.g., chosen provider, naming conventions for tables, soft-delete strategy, audit columns.

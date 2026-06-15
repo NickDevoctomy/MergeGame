@@ -1,3 +1,7 @@
+---
+applyTo: "src/**/*.cs,tests/**/*.cs"
+---
+
 # Architectural Guardrails (Clean / Onion Architecture)
 
 You are an expert .NET solution architect. Enforce the layer boundaries below. Do not propose code

@@ -1,3 +1,7 @@
+---
+applyTo: "tests/**/*.cs"
+---
+
 # Testing Standards
 
 You are a test engineer. Apply these rules to all test code (`tests/**`).

@@ -19,21 +19,21 @@
 
 ## Standards index
 
-0. [`05-onboarding.md`](05-onboarding.md) — **Do this first** in a new workspace: confirm the project name.
-1. [`10-architecture.md`](10-architecture.md) — Clean/Onion layer boundaries and allowed dependencies.
-2. [`15-solid-design.md`](15-solid-design.md) — SOLID object-oriented design principles.
-3. [`20-csharp-style.md`](20-csharp-style.md) — Language conventions, formatting, naming.
-4. [`30-async.md`](30-async.md) — Asynchronous and concurrency rules.
-5. [`40-efcore-data-access.md`](40-efcore-data-access.md) — Entity Framework Core performance and integrity.
-6. [`50-api-aspnet.md`](50-api-aspnet.md) — ASP.NET Core API conventions.
-7. [`60-testing.md`](60-testing.md) — Testing standards and structure.
-8. [`70-security-owasp.md`](70-security-owasp.md) — Security baseline (OWASP Top 10).
-9. [`90-loop-circuit-breaker.md`](90-loop-circuit-breaker.md) — Anti-loop / self-correction protocol.
+0. [`05-onboarding.instructions.md`](05-onboarding.instructions.md) — **Do this first** in a new workspace: confirm the project name.
+1. [`10-architecture.instructions.md`](10-architecture.instructions.md) — Clean/Onion layer boundaries and allowed dependencies.
+2. [`15-solid-design.instructions.md`](15-solid-design.instructions.md) — SOLID object-oriented design principles.
+3. [`20-csharp-style.instructions.md`](20-csharp-style.instructions.md) — Language conventions, formatting, naming.
+4. [`30-async.instructions.md`](30-async.instructions.md) — Asynchronous and concurrency rules.
+5. [`40-efcore-data-access.instructions.md`](40-efcore-data-access.instructions.md) — Entity Framework Core performance and integrity.
+6. [`50-api-aspnet.instructions.md`](50-api-aspnet.instructions.md) — ASP.NET Core API conventions.
+7. [`60-testing.instructions.md`](60-testing.instructions.md) — Testing standards and structure.
+8. [`70-security-owasp.instructions.md`](70-security-owasp.instructions.md) — Security baseline (OWASP Top 10).
+9. [`90-loop-circuit-breaker.instructions.md`](90-loop-circuit-breaker.instructions.md) — Anti-loop / self-correction protocol.
 
 ## Operating principles for every agent
 
 - **Read the standard for the layer you are editing before generating code.** Layers are defined in
-  [`10-architecture.md`](10-architecture.md).
+  [`10-architecture.instructions.md`](10-architecture.instructions.md).
 - **Prefer reading the real files on disk** over relying on cached assumptions.
 - **If a request would violate a standard, stop, explain the conflict, and propose a compliant
   alternative** rather than silently breaking the rule.
@@ -45,12 +45,12 @@
 ## Project facts to fill in
 
 These values are referenced throughout the standards. On a fresh drop into a new workspace, the agent
-confirms them during onboarding (see [`05-onboarding.md`](05-onboarding.md)) rather than expecting you
+confirms them during onboarding (see [`05-onboarding.instructions.md`](05-onboarding.instructions.md)) rather than expecting you
 to edit them by hand.
 
 - **Top-level namespace prefix:** `YourApp` _(placeholder — the agent will ask for and apply the real
-  name; see [`05-onboarding.md`](05-onboarding.md))_
-- **Target framework:** `net9.0`
+  name; see [`05-onboarding.instructions.md`](05-onboarding.instructions.md))_
+- **Target framework:** `net10.0`
 - **Primary database engine:** _TODO (e.g., PostgreSQL, SQL Server)_
 - **Test framework:** `xUnit`
 

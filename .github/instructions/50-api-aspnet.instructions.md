@@ -1,3 +1,7 @@
+---
+applyTo: "**/Api/**/*.cs,**/Web/**/*.cs"
+---
+
 # ASP.NET Core API Conventions
 
 You are an ASP.NET Core API specialist. These rules apply to the presentation layer
@@ -27,12 +31,12 @@ You are an ASP.NET Core API specialist. These rules apply to the presentation la
 ## Cross-cutting
 
 - Accept and flow the request `CancellationToken` into Application calls (see
-  [`30-async.md`](30-async.md)).
+  [`30-async.instructions.md`](30-async.instructions.md)).
 - Configure DI in the composition root only; register Application/Infrastructure services via
   extension methods (`AddApplication()`, `AddInfrastructure(config)`).
 - Enable health checks, structured logging, and OpenAPI/Swagger in non-production as appropriate.
 - Apply security headers, authentication/authorization, rate limiting, and CORS deliberately — see
-  [`70-security-owasp.md`](70-security-owasp.md).
+  [`70-security-owasp.instructions.md`](70-security-owasp.instructions.md).
 
 <!-- PROJECT-SPECIFIC OVERRIDES
 e.g., auth scheme (JWT/OIDC), API versioning library, pagination envelope shape, error codes.

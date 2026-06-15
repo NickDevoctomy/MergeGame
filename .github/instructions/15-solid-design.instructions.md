@@ -1,7 +1,7 @@
 # SOLID Design Principles
 
 You are an expert object-oriented designer. Apply the five SOLID principles when designing types,
-especially in the Domain and Application layers (see [`10-architecture.md`](10-architecture.md)).
+especially in the Domain and Application layers (see [`10-architecture.instructions.md`](10-architecture.instructions.md)).
 These principles produce code that is easy to extend, test, and reason about. Favor them — but do
 not over-engineer: introduce an abstraction when there is a real, present need, not speculatively.
 
@@ -41,7 +41,7 @@ not over-engineer: introduce an abstraction when there is a real, present need, 
 
 - High-level modules depend on **abstractions**, not concrete details. Both depend on abstractions.
 - Define interfaces (ports) in the Domain/Application layers; implement them in Infrastructure. This
-  is the mechanism behind the inward-pointing dependencies in [`10-architecture.md`](10-architecture.md).
+  is the mechanism behind the inward-pointing dependencies in [`10-architecture.instructions.md`](10-architecture.instructions.md).
 - Inject dependencies through constructors; never `new` up infrastructure inside business logic.
 - **Smell:** an Application/Domain type instantiating a `DbContext`, `HttpClient`, or other concrete
   infrastructure directly.
@@ -54,4 +54,4 @@ not over-engineer: introduce an abstraction when there is a real, present need, 
 - Keep abstractions cohesive: an interface that exists only to mirror one class one-to-one adds
   indirection without value.
 - When a request would force a SOLID violation, stop and propose a compliant design (see the
-  operating principles in [`00-overview.md`](00-overview.md)).
+  operating principles in [`00-overview.instructions.md`](00-overview.instructions.md)).

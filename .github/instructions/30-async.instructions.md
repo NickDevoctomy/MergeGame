@@ -1,3 +1,7 @@
+---
+applyTo: "src/**/*.cs,tests/**/*.cs"
+---
+
 # Asynchronous & Concurrency Standards
 
 You are a .NET concurrency specialist. Apply these rules to all asynchronous code.

@@ -1,5 +1,3 @@
-# EditorConfig — enforces the C# style in agent-standards/20-csharp-style.md
-# This is the mechanical counterpart to the written standard. Keep the two in sync.
 root = true
 
 [*]

@@ -1,3 +1,7 @@
+---
+applyTo: "src/**/*.cs,tests/**/*.cs"
+---
+
 # C# Coding Style & Language Standards
 
 You are a senior C# developer. All generated code must follow modern .NET conventions. These rules

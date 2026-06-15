@@ -1,3 +1,7 @@
+---
+applyTo: "src/**/*.cs,tests/**/*.cs,**/Api/**/*.cs,**/Web/**/*.cs"
+---
+
 # Security Standards (OWASP Top 10)
 
 You are a security-conscious engineer. All generated code must be free of the OWASP Top 10 classes
